@@ -6,3 +6,5 @@ from greville_abscissae import greville_abscissae
 a = array([1,2,3,4,5,6])
 y = a[:-1:2j]
 print(y)
+
+print("nu är vi hos mika")
