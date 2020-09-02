@@ -3,11 +3,6 @@ from numpy import *
 import matplotlib.pyplot as plt
 from greville_abscissae import greville_abscissae
 
-x = linspace(0, 10, 100)
-a = random.rand(len(x))
-y = greville_abscissae(a)
-
-plt.plot(x, a)
-plt.plot(x, y)
-plt.grid()
-plt.show()
+a = array([1,2,3,4,5,6])
+y = a[:-1:2j]
+print(y)
