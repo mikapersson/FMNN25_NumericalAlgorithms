@@ -9,10 +9,14 @@ class Cubic_Spline:
 
     def __init__(self, control, knots):
         self.control_points = control
+        # Add d_{-2}, d_{-1}, d_{K+1} and d_{K+2}
+        self.control_points = vstack([control[0], control[0], control, control[-1], control[-1]])
+
         self.knot_points = knots
+        # Add u_{-2}, u_{-1}, u_{K+1} and u_{K+2}
         self.knot_points = insert(self.knot_points, [0, 0, len(self.knot_points), len(self.knot_points)], [knots[0], knots[0], knots[-1], knots[-1]])
 
-        size = 100
+        size = 500
         self.su = zeros((size, 2))
 
         for i in range(0, size):
@@ -40,8 +44,7 @@ class Cubic_Spline:
         four_control = self.control_points[I-2:I+2].copy()
 
         # 3) Run blossom algorithm (de Boor)
-        s = self.Blossoms(four_control, self.knot_points, I, u)
-
+        s = self.Blossoms(four_control, self.knot_points, I, u)  # d[u,u,u] = s(u)
         return s
 
     def Blossoms(self, c, k, I, u):
@@ -85,7 +88,7 @@ class Cubic_Spline:
             alphau = (urightmostknot - u) / (urightmostknot - uleftmostknot)
 
             # Vector of new control points is filled.
-            newelement = (alphau) * c[i - 1] + (1 - alphau) * c[i]
+            newelement = alphau * c[i - 1] + (1 - alphau) * c[i]
 
             newcontrolpoints[i - 1] = newelement
 

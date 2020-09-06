@@ -16,6 +16,7 @@ def main():
          [40, 17]])
     test_knots = array([0, 1, 2, 4, 5, 6, 9, 11, 12])
     cubsplin = Cubic_Spline(test_control, test_knots)
+    print(cubsplin(12))
     cubsplin.plot()
 
     # b = basis_function(test_knots, 10)
