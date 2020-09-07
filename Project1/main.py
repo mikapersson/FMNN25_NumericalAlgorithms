@@ -14,6 +14,35 @@ def test_spline(control, knots):
     cubicspline.plot()
 
 
+def test_bspline(control, knots):
+    control = array(control)
+    size = 1000
+    s = zeros((size, 2))
+    basis_functions = array([basis_function(size, knots, i) for i in range(len(knots)-1)])
+    for u in range(size):
+        # Find hot interval. Index of the element with higher value (than u) - 1.
+        I = (knots > u).argmax() - 1
+
+        if I == 0:
+            s[u] = knots[0]
+        if I == -1:
+            s[u] = knots[-1]
+
+        s[u] = sum(control[i]*basis_functions[i, u] for i in range(I-2, I+2))
+
+    plt.plot(s[:, 0], s[:, 1], 'b', label="cubic spline")  # spline
+    plt.plot(control[:, 0], control[:, 1], '-.r', label="control polygon")  # control polygon
+    plt.scatter(control[:, 0], control[:, 1], color='red')  # de Boor points
+
+    plt.title("Cubic Spline")
+    plt.legend()
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.grid()
+    plt.show()
+
+
+
 def test_basis_functions(knots):
     """
     Plot every basis function according to the given knots
@@ -25,7 +54,7 @@ def test_basis_functions(knots):
     last_knot = knots[-1]
     xspace = linspace(0, last_knot, size)
 
-    for j in range(len(knots)):
+    for j in range(len(knots)+1):
         temp_base = basis_function(size, knots, j)
         plt.plot(xspace, temp_base)
 
@@ -79,8 +108,9 @@ def main():
     KNOTS[1] = KNOTS[2] = KNOTS[0]
     KNOTS[-3] = KNOTS[-2] = KNOTS[-1]
 
-    test_spline(CONTROL, KNOTS)
-    test_basis_functions(KNOTS)
+    #test_spline(CONTROL, KNOTS)
+    #test_basis_functions(KNOTS)
+    test_bspline(CONTROL, KNOTS)
 
 
 main()

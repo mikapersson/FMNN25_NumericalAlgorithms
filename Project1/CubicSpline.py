@@ -109,7 +109,7 @@ class CubicSpline:
         and the de Boor points (self.control_points)
         :return: None
         """
-        
+
         plt.plot(self.su[:, 0], self.su[:, 1], 'b', label="cubic spline")  # spline
         plt.plot(self.control_points[:, 0], self.control_points[:, 1], '-.r', label="control polygon")  # control polygon
         plt.scatter(self.control_points[:, 0], self.control_points[:, 1], color='red')  # de Boor points
