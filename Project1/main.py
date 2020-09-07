@@ -2,7 +2,41 @@ from CubicSpline import *
 from basis_function import basis_function
 
 
+def test_spline(control, knots):
+    """
+    Create and plot the spline according to the given control points and knots
+    :param control: (array)
+    :param knots: (array)
+    :return: None
+    """
+
+    cubicspline = CubicSpline(control, knots)
+    cubicspline.plot()
+
+
+def test_basis_functions(knots):
+    """
+    Plot every basis function according to the given knots
+    :param knots: (array)
+    :return: None
+    """
+
+    size = 1000
+    last_knot = knots[-1]
+    xspace = linspace(0, last_knot, size)
+
+    for j in range(len(knots)):
+        temp_base = basis_function(size, knots, j)
+        plt.plot(xspace, temp_base)
+
+    plt.title("Basis functions from {} to {}".format("$u_0$", "$u_{}$".format({len(knots)-1})))
+    plt.xlabel("u")
+    plt.grid()
+    plt.show()
+
+
 def main():
+    # We have two test sets
 
     test_control = array(
         [[-17, 9],
@@ -16,9 +50,6 @@ def main():
          [18, -3],
          [40, 17]])
     test_knots = array([0, 1, 2, 3, 4, 5, 6, 9, 11, 12])
-    cubsplin = CubicSpline(test_control, test_knots)
-    #cubsplin.plot()
-
 
     CONTROL = [(-12.73564, 9.03455),
                (-26.77725, 15.89208),
@@ -48,27 +79,8 @@ def main():
     KNOTS[1] = KNOTS[2] = KNOTS[0]
     KNOTS[-3] = KNOTS[-2] = KNOTS[-1]
 
-
-    #cubsplin = CubicSpline(CONTROL, KNOTS)
-    # cubsplin.plot()
-    # print(cubsplin(0.2))
-
-    size = 1000
-    xspace = linspace(0, 8, size)
-    nvals = zeros(size)
-    nvals2 = zeros(size)
-    maxval = amax(test_knots)
-    for i in range(0, size):
-        nvals[i] = basis_function(test_knots, 0, 3, i * 8 / size)
-        nvals2[i] = basis_function(test_knots, 1, 3, i * 8 / size)
-
-    print(str(nvals.shape))
-    print(str(xspace.shape))
-
-    plt.plot(xspace, nvals, 'b')
-    plt.plot(xspace, nvals2, 'r')
-    plt.grid()
-    plt.show()
+    test_spline(CONTROL, KNOTS)
+    test_basis_functions(KNOTS)
 
 
 main()

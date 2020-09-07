@@ -10,14 +10,14 @@ Authors:
 
 class CubicSpline:
     """
-    Class for creating and plotting a cubic spline........
+    Class for creating and plotting a cubic spline
     """
 
     def __init__(self, control, knots):
         """
-
-        :param control:
-        :param knots:
+        Constructs a cubic spline according to the given control points and knots
+        :param control: (array)
+        :param knots: (array)
         """
 
         self.control_points = control
@@ -36,9 +36,9 @@ class CubicSpline:
 
     def __call__(self, u):  # follows 1.9 summary
         """
-
+        Computes and returns the value of the spline at 'u'
         :param u: (float)
-        :return:
+        :return: (float)
         """
 
         # Find hot interval. Index of the element with higher value (than u) - 1.
@@ -109,9 +109,14 @@ class CubicSpline:
         and the de Boor points (self.control_points)
         :return: None
         """
-        plt.plot(self.su[:, 0], self.su[:, 1], 'b')  # spline
-        plt.plot(self.control_points[:, 0], self.control_points[:, 1], '-.r')  # control polygon
+        
+        plt.plot(self.su[:, 0], self.su[:, 1], 'b', label="cubic spline")  # spline
+        plt.plot(self.control_points[:, 0], self.control_points[:, 1], '-.r', label="control polygon")  # control polygon
         plt.scatter(self.control_points[:, 0], self.control_points[:, 1], color='red')  # de Boor points
 
+        plt.title("Cubic Spline")
+        plt.legend()
+        plt.xlabel("x")
+        plt.ylabel("y")
         plt.grid()
         plt.show()
