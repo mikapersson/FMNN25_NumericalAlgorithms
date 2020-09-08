@@ -13,12 +13,12 @@ def test_spline(control, knots):
     cubicspline = CubicSpline(control, knots)
     cubicspline.plot()
 
-
+'''
 def test_bspline(control, knots):
     control = array(control)
     size = 1000
     s = zeros((size, 2))
-    basis_functions = array([basis_function(size, knots, i) for i in range(len(knots)-1)])
+    basis_functions = array([basis_function(size, knots, i) for i in range(len(knots)-2)])
     for u in range(size):
         # Find hot interval. Index of the element with higher value (than u) - 1.
         I = (knots > u).argmax() - 1
@@ -40,6 +40,7 @@ def test_bspline(control, knots):
     plt.ylabel("y")
     plt.grid()
     plt.show()
+'''
 
 
 def test_basis_functions(knots):
@@ -126,13 +127,16 @@ def main():
 
     CONTROL = array(CONTROL)
 
-    #test_spline(test_control, test_knots)
-    #test_basis_functions(test_knots)
+
+    # MANUAL TESTING AREA
+
+    #test_spline(test_control, test_knots)  # plot spline
+    #test_basis_functions(test_knots)       # plot basis functions
     #test_bspline(test_control, test_knots)
-    
-    x = array(CONTROL[:, 0])
-    y = array(CONTROL[:, 1])
-    test_interpolate(CONTROL, KNOTS, x, y)
+
+    #x = array(CONTROL[:, 0])
+    #y = array(CONTROL[:, 1])
+    #test_interpolate(CONTROL, KNOTS, x, y)
 
 
 main()
