@@ -27,6 +27,9 @@ def basis_function_rec(knots, i, k, u):
     :return: (array) the i:th B-spline basis function of order 'k' given the 'knots' at 'u'
     """
 
+    if k == 3 and i == len(knots) - 3 and knots[-1] == u:
+        return 1
+
     extended_knots = knots
     if k == 3:
         extended_knots = insert(extended_knots, len(knots),  knots[-1])

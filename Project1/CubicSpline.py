@@ -67,7 +67,7 @@ class CubicSpline:
         dx = sl.solve(vander, x)
         dy = sl.solve(vander, y)
 
-        return dx, dy
+        return array([dx, dy]).T
 
     def blossoms(self, c, k, I, u):
         """

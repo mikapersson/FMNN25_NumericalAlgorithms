@@ -19,5 +19,8 @@ def vandermonde(knots):
         for base_index in range(size):
             temp_value = basis_function_rec(knots, base_index, 3, chis[chi_index])
             vandermonde_matrix[chi_index, base_index] = temp_value
-
     return vandermonde_matrix
+
+
+
+

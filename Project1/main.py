@@ -66,9 +66,11 @@ def test_basis_functions(knots):
 
 def test_interpolate(control, knots, x, y):
     cubsplin = CubicSpline(control, knots)
-    Ds = cubsplin.interpolate(x, y)
-    print(Ds)
-    return
+    inter_points = cubsplin.interpolate(x, y)
+    print(inter_points)
+    interpolated = CubicSpline(inter_points, knots)
+    interpolated.plot()
+
 
 def main():
     # We have two test sets
@@ -114,13 +116,12 @@ def main():
     KNOTS[1] = KNOTS[2] = KNOTS[0]
     KNOTS[-3] = KNOTS[-2] = KNOTS[-1]
 
-    #test_spline(CONTROL, KNOTS)
-    test_basis_functions(KNOTS)
+    #test_spline(test_control, test_knots)
+    #test_basis_functions(test_knots)
     #test_bspline(test_control, test_knots)
     x = array(test_control[:, 0])
-    print(x)
     y = array(test_control[:, 1])
-    #test_interpolate(test_control, test_knots, x, y)
+    test_interpolate(test_control, test_knots, x, y)
 
 
 main()
