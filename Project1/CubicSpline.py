@@ -21,17 +21,23 @@ class CubicSpline:
         :param knots: (array)
         """
 
-        self.control_points = control
-        # Add d_{-2}, d_{-1}, d_{K+1} and d_{K+2}
-        self.control_points = vstack([control[0], control[0], control, control[-1], control[-1]])
+        self.control_points = array(control)
 
-        self.knot_points = knots
+        self.knot_points = array(knots)
 
         size = 10000
         self.su = zeros((size, 2))
 
         for i in range(0, size):  # Calculate the spline self.su
-            self.su[i] = self.__call__(i * len(self.knot_points) / size)
+            self.su[i] = self.__call__(i * len(self.knot_points) / (size-1))
+
+    def get_spline(self):
+        """
+        Returns the spline
+        :return: (array)
+        """
+
+        return self.su
 
     def __call__(self, u):  # follows 1.9 summary
         """
@@ -57,10 +63,10 @@ class CubicSpline:
 
     def interpolate(self, x, y):
         """
-
-        :param x:
-        :param y:
-        :return:
+        Computes the control points for a spline interpolated through the coordinates (x,y)
+        :param x: (array)
+        :param y: (array)
+        :return: (array)
         """
 
         vander = vandermonde(self.knot_points)
@@ -68,6 +74,15 @@ class CubicSpline:
         dy = sl.solve(vander, y)
 
         return array([dx, dy]).T
+
+    def plot_interpolated(self, inter_control, x, y):
+        """
+        Plots the interpolated spline and the interpolation points (x, y)
+        :param inter_control: calculated control points
+        :param x: (array) x-coordinates
+        :param y: (array) y-coordinates
+        :return: None
+        """
 
     def blossoms(self, c, k, I, u):
         """

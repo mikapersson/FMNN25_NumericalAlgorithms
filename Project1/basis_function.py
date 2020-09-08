@@ -12,7 +12,7 @@ def basis_function(size, knots, j):
 
     result = zeros(size)
     for i in range(0, size):
-        result[i] = basis_function_rec(knots, j, 3, i * knots[-1] / size)
+        result[i] = basis_function_rec(knots, j, 3, i * knots[-1] / (size-1))
 
     return result
 
