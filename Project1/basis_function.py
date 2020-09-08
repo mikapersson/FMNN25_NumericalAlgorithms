@@ -27,17 +27,18 @@ def basis_function_rec(knots, i, k, u):
     :return: (array) the i:th B-spline basis function of order 'k' given the 'knots' at 'u'
     """
 
-    if k + i >= len(knots):
-        return 0
+    extended_knots = knots
+    if k == 3:
+        extended_knots = insert(extended_knots, len(knots),  knots[-1])
 
     if k == 0:
-        return 1.0 if knots[i-1] <= u < knots[i] else 0.0
-    if knots[i + k - 1] == knots[i-1]:
+        return 1.0 if extended_knots[i-1] <= u < extended_knots[i] else 0.0
+    if extended_knots[i + k - 1] == extended_knots[i-1]:
         c1 = 0.0
     else:
-        c1 = (u - knots[i-1]) / (knots[i-1 + k] - knots[i-1]) * basis_function_rec(knots, i, k-1, u)
-    if knots[i + k] == knots[i]:
+        c1 = (u - extended_knots[i-1]) / (extended_knots[i-1 + k] - extended_knots[i-1]) * basis_function_rec(extended_knots, i, k-1, u)
+    if extended_knots[i + k] == extended_knots[i]:
         c2 = 0.0
     else:
-        c2 = (knots[i + k] - u) / (knots[i + k] - knots[i]) * basis_function_rec(knots, i+1, k-1, u)
+        c2 = (extended_knots[i + k] - u) / (extended_knots[i + k] - extended_knots[i]) * basis_function_rec(extended_knots, i+1, k-1, u)
     return c1 + c2

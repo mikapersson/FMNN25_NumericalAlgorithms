@@ -115,12 +115,12 @@ def main():
     KNOTS[-3] = KNOTS[-2] = KNOTS[-1]
 
     #test_spline(CONTROL, KNOTS)
-    #test_basis_functions(KNOTS)
+    test_basis_functions(KNOTS)
     #test_bspline(test_control, test_knots)
     x = array(test_control[:, 0])
     print(x)
     y = array(test_control[:, 1])
-    test_interpolate(test_control, test_knots, x, y)
+    #test_interpolate(test_control, test_knots, x, y)
 
 
 main()
