@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from numpy import *
 import scipy.linalg as sl
 from greville_abscissae import greville_abscissae
+from vandermonde import vandermonde
 
 """
 Authors: 
@@ -25,8 +26,6 @@ class CubicSpline:
         self.control_points = vstack([control[0], control[0], control, control[-1], control[-1]])
 
         self.knot_points = knots
-        # Add u_{-2}, u_{-1}, u_{K+1} and u_{K+2}
-        self.knot_points = insert(self.knot_points, [0, 0, len(self.knot_points), len(self.knot_points)], [knots[0], knots[0], knots[-1], knots[-1]])
 
         size = 10000
         self.su = zeros((size, 2))
@@ -55,6 +54,20 @@ class CubicSpline:
         # Run blossom algorithm (de Boor)
         s = self.blossoms(four_control, self.knot_points, I, u)  # d[u,u,u] = s(u)
         return s
+
+    def interpolate(self, x, y):
+        """
+
+        :param x:
+        :param y:
+        :return:
+        """
+
+        vander = vandermonde(self.knot_points)
+        dx = sl.solve(vander, x)
+        dy = sl.solve(vander, y)
+
+        return dx, dy
 
     def blossoms(self, c, k, I, u):
         """

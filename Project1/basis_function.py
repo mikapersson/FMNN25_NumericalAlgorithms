@@ -11,8 +11,7 @@ def basis_function(size, knots, j):
     """
 
     extended_knots = knots
-    # Add u_{-2}, u_{-1}, u_{K+1} and u_{K+2}
-    extended_knots = insert(extended_knots, [0, 0, len(knots), len(knots)], [knots[0], knots[0], knots[-1], knots[-1]])
+    extended_knots = insert(extended_knots, len(knots),  knots[-1])
 
     result = zeros(size)
     for i in range(0, size):

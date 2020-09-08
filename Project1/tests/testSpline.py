@@ -9,5 +9,6 @@ class TestSpline(unittest.TestCase):
         Tests if the basis functions sum up to one
         """
 
+
 if __name__=='__main__':
     unittest.main()

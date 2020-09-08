@@ -28,7 +28,7 @@ def test_bspline(control, knots):
         if I == -1:
             s[u] = knots[-1]
 
-        s[u] = sum(control[i]*basis_functions[i, u] for i in range(I-2, I+2))
+        s[u] = sum(control[i]*basis_functions[i, u] for i in range(I-2, I+2))  # change u in basis_function-argument
 
     plt.plot(s[:, 0], s[:, 1], 'b', label="cubic spline")  # spline
     plt.plot(control[:, 0], control[:, 1], '-.r', label="control polygon")  # control polygon
@@ -42,7 +42,6 @@ def test_bspline(control, knots):
     plt.show()
 
 
-
 def test_basis_functions(knots):
     """
     Plot every basis function according to the given knots
@@ -51,18 +50,25 @@ def test_basis_functions(knots):
     """
 
     size = 1000
+    L = len(knots) - 3
     last_knot = knots[-1]
     xspace = linspace(0, last_knot, size)
 
-    for j in range(len(knots)+1):
+    for j in range(L + 1):
         temp_base = basis_function(size, knots, j)
         plt.plot(xspace, temp_base)
 
-    plt.title("Basis functions from {} to {}".format("$u_0$", "$u_{}$".format({len(knots)-1})))
+    plt.title("Basis functions from {} to {}".format("$u_0$", "$u_{}$".format({L})))
     plt.xlabel("u")
     plt.grid()
     plt.show()
 
+
+def test_interpolate(control, knots, x, y):
+    cubsplin = CubicSpline(control, knots)
+    Ds = cubsplin.interpolate(x, y)
+    print(Ds)
+    return
 
 def main():
     # We have two test sets
@@ -78,7 +84,7 @@ def main():
          [15, 8],
          [18, -3],
          [40, 17]])
-    test_knots = array([0, 1, 2, 3, 4, 5, 6, 9, 11, 12])
+    test_knots = array([0, 0, 0, 1, 2, 3, 6, 9, 11, 12, 12, 12])
 
     CONTROL = [(-12.73564, 9.03455),
                (-26.77725, 15.89208),
@@ -110,7 +116,10 @@ def main():
 
     #test_spline(CONTROL, KNOTS)
     #test_basis_functions(KNOTS)
-    test_bspline(CONTROL, KNOTS)
+    #test_bspline(test_control, test_knots)
+    x = array(test_control[:, 0])
+    y = array(test_control[:, 1])
+    test_interpolate(test_control, test_knots, x, y)
 
 
 main()
