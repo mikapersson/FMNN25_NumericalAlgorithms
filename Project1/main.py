@@ -118,6 +118,7 @@ def main():
     #test_basis_functions(KNOTS)
     #test_bspline(test_control, test_knots)
     x = array(test_control[:, 0])
+    print(x)
     y = array(test_control[:, 1])
     test_interpolate(test_control, test_knots, x, y)
 

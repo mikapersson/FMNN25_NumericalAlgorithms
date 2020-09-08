@@ -10,12 +10,9 @@ def basis_function(size, knots, j):
     :return: (array) the i:th B-spline basis function with 'size' values, given the 'knots'
     """
 
-    extended_knots = knots
-    extended_knots = insert(extended_knots, len(knots),  knots[-1])
-
     result = zeros(size)
     for i in range(0, size):
-        result[i] = basis_function_rec(extended_knots, j, 3, i * extended_knots[-1] / size)
+        result[i] = basis_function_rec(knots, j, 3, i * knots[-1] / size)
 
     return result
 
@@ -29,6 +26,9 @@ def basis_function_rec(knots, i, k, u):
     :param u: (float) at which point we evaluate the value
     :return: (array) the i:th B-spline basis function of order 'k' given the 'knots' at 'u'
     """
+
+    if k + i >= len(knots):
+        return 0
 
     if k == 0:
         return 1.0 if knots[i-1] <= u < knots[i] else 0.0
