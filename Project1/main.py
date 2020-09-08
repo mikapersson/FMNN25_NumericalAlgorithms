@@ -52,8 +52,9 @@ def test_basis_functions(knots):
 
     size = 1000
     L = len(knots) - 3
+    first_knot = knots[0]
     last_knot = knots[-1]
-    xspace = linspace(0, last_knot, size)
+    xspace = linspace(first_knot, last_knot, size)
 
     for j in range(L + 1):
         temp_base = basis_function(size, knots, j)
@@ -79,6 +80,11 @@ def test_interpolate(control, knots, x, y):
     plt.ylabel("y")
     plt.grid()
     plt.show()
+
+
+def test_basis_blossoms(control, knots, index):
+    cubsplin = CubicSpline(control, knots)
+    cubsplin.plot_basis_blossoms(index)
 
 
 def main():
@@ -137,6 +143,7 @@ def main():
     #x = array(CONTROL[:, 0])
     #y = array(CONTROL[:, 1])
     #test_interpolate(CONTROL, KNOTS, x, y)
+    test_basis_blossoms(test_control, test_knots, 5)
 
 
 main()

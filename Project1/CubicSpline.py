@@ -3,9 +3,10 @@ from numpy import *
 import scipy.linalg as sl
 from greville_abscissae import greville_abscissae
 from vandermonde import vandermonde
+from basis_function import basis_function
 
 """
-Authors: 
+Authors: Mika Persson & Viktor Sambergs
 """
 
 
@@ -61,36 +62,14 @@ class CubicSpline:
         s = self.blossoms(four_control, self.knot_points, I, u)  # d[u,u,u] = s(u)
         return s
 
-    def interpolate(self, x, y):
-        """
-        Computes the control points for a spline interpolated through the coordinates (x,y)
-        :param x: (array)
-        :param y: (array)
-        :return: (array)
-        """
-
-        vander = vandermonde(self.knot_points)
-        dx = sl.solve(vander, x)
-        dy = sl.solve(vander, y)
-
-        return array([dx, dy]).T
-
-    def plot_interpolated(self, inter_control, x, y):
-        """
-        Plots the interpolated spline and the interpolation points (x, y)
-        :param inter_control: calculated control points
-        :param x: (array) x-coordinates
-        :param y: (array) y-coordinates
-        :return: None
-        """
-
-    def blossoms(self, c, k, I, u):
+    def blossoms(self, c, k, I, u, depth=3):
         """
         Evaluates s(u) in accordance with De Boor's algorithm (section 1.7 in the slides)
         :param c: (array) Array of "hot" control points of shape (4,)
-        :param k: (array) Array of knot points of shape (#knot points + 4,)
+        :param k: (array) knot points of shape (#knot points + 4,)
         :param I: (int) Index of interval that contains u
         :param u: (int) position in [u_0, u_K]
+        :param depth: (int) how deep we do the recursion
         :return: (array) the value of the spline at the knot point u, the shape is (2,)
         """
 
@@ -129,7 +108,34 @@ class CubicSpline:
             newcontrolpoints[i - 1] = newelement
 
         # For every call the size of newcontrolpoints is smaller until s(u) is returned.
-        return self.blossoms(newcontrolpoints, k, I, u)
+        if depth == 0:
+            return newcontrolpoints[0]
+        else:
+            depth -= 1
+            return self.blossoms(newcontrolpoints, k, I, u)
+
+    def interpolate(self, x, y):
+        """
+        Computes the control points for a spline interpolated through the coordinates (x,y)
+        :param x: (array)
+        :param y: (array)
+        :return: (array)
+        """
+
+        vander = vandermonde(self.knot_points)
+        dx = sl.solve(vander, x)
+        dy = sl.solve(vander, y)
+
+        return array([dx, dy]).T
+
+    def plot_interpolated(self, inter_control, x, y):
+        """
+        Plots the interpolated spline and the interpolation points (x, y)
+        :param inter_control: calculated control points
+        :param x: (array) x-coordinates
+        :param y: (array) y-coordinates
+        :return: None
+        """
 
     def plot(self):
         """
@@ -146,5 +152,36 @@ class CubicSpline:
         plt.legend()
         plt.xlabel("x")
         plt.ylabel("y")
+        plt.grid()
+        plt.show()
+
+    def plot_basis_blossoms(self, I):
+        """
+        Plots the i:th basis function together with the blossoms d[u,u,u_i], d[u,u_{i-1},u_i] and d[u_{i-2},u_{i-1},u_i]
+        :param I: (int)
+        :return: None
+        """
+        size = 1000
+        first_knot = self.knot_points[0]
+        last_knot = self.knot_points[-1]
+        xspace = linspace(first_knot, last_knot, size)
+        basis_func = basis_function(size, self.knot_points, I)
+
+        # Find blossoms ONLY WORKS FOR I>=2
+        four_control = self.control_points[I-2:I+2].copy()                      # 4 "hot" knot points
+        first_blossom = four_control[0]                                         # d[u_{i-2},u_{i-1},u_i]
+        second_blossom = self.blossoms(four_control, self.knot_points, I, I, 1) # d[u,u_{i-1},u_i]
+        third_blossom = self.blossoms(four_control, self.knot_points, I, I, 2)  # d[u,u,u_i]
+
+        print(first_blossom)
+        print(second_blossom)
+        print(third_blossom)
+
+        plt.plot(xspace, basis_func, label="basis function")
+        plt.title("Basis function {} and blossoms".format("$N_{}^3$".format(I)))
+        plt.scatter(first_blossom[0], first_blossom[1], label="d[$u_{},u_{},u_{}$]".format({I-2}, {I-1},{I}))
+        plt.scatter(first_blossom[0], first_blossom[1], label="d[$u,u_{},u_{}$]".format({I - 1}, {I}))
+        plt.scatter(first_blossom[0], first_blossom[1], label="d[$u,u,u_{}$]".format({I}))
+        plt.legend()
         plt.grid()
         plt.show()
