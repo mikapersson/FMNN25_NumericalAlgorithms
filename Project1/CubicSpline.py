@@ -6,7 +6,7 @@ from vandermonde import vandermonde
 from basis_function import basis_function
 
 """
-Authors: Mika Persson & Viktor Sambergs
+@author: Mika Persson & Viktor Sambergs
 """
 
 

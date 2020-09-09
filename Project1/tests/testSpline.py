@@ -1,13 +1,20 @@
-from basis_function import basis_function
+from basis_function import basis_function, basis_function_rec
 from CubicSpline import *
+import matplotlib.pyplot as plt
 import unittest
+from numpy.testing import assert_allclose
 
 """
-Authors: Mika Persson & Viktor Sambergs
+Test of Spline Class
+
+@author: Mika Persson & Viktor Sambergs
 """
 
 
 class TestSpline(unittest.TestCase):
+    """
+    Test CubicSpline object and methods
+    """
     test_control = array(
         [[-17, 9],
          [-40, 20],
@@ -21,44 +28,57 @@ class TestSpline(unittest.TestCase):
          [40, 17]])
     test_knots = array([0, 0, 0, 1, 2, 3, 6, 9, 11, 12, 12, 12])
     inp1 = (test_control, test_knots)
+    x = array(test_control[:, 0])
+    y = array(test_control[:, 1])
 
     def testinit(self):
+        """
+        Test Cubic Spline init
+        """
         spline = CubicSpline(*self.inp1)
         assert (self.test_knots == spline.knot_points).all()
         assert (self.test_control == spline.control_points).all()
 
-    def test_unity(self):
+    def testunity(self):
         """
-        Tests if the basis functions sum up to one
+        Tests unity of basis functions
         """
+        grid = self.test_knots
+        elements = zeros(size(grid))
+        for u in range(grid[0], grid[-1]):
+            for i in range(size(grid)-3):
+                elements[i] = basis_function_rec(grid, i, 3, u)
+            s = sum(elements)
+            unity = 1
+            self.assertAlmostEqual(s, unity)
 
-    def test_bspline(control, knots):
-        control = array(control)
-        size = 1000
-        s = zeros((size, 2))
-        basis_functions = array([basis_function(size, knots, i) for i in range(len(knots) - 2)])
+    def test_bspline(self):  # THIS TEST DOESN'T QUITE PASS
+        """
+        Test if Cubic Spline created from object CubicSpline equals the sum of the control points
+        and basis functions as in section 1.5
+        """
+        cubsplin = CubicSpline(self.test_control, self.test_knots)
+
+        size = 10000
+        bspline = zeros((size, 2))
+        basis_functions = array([basis_function(size, self.test_knots, j) for j in range(len(self.test_knots) - 2)])
         for u in range(size):
-            # Find hot interval. Index of the element with higher value (than u) - 1.
-            I = (knots > u).argmax() - 1
+            bspline[u] = sum(self.test_control[i] * basis_functions[i, u] for i in range(len(basis_functions)))
 
-            if I == 0:
-                s[u] = knots[0]
-            if I == -1:
-                s[u] = knots[-1]
+        assert_allclose(cubsplin.get_spline(), bspline)  # ERROR
 
-            s[u] = sum(
-                control[i] * basis_functions[i, u] for i in range(I - 2, I + 2))  # change u in basis_function-argument
+    def test_interpolation(self):
+        """
+        Test if the first/last spline point equals the first/last interpolation point
+        """
+        cubsplin = CubicSpline(*self.inp1)
+        first_inter_point = array([self.x[0], self.y[0]])
+        last_inter_point = array([self.x[-1], self.y[-1]])
+        first_spline_point = cubsplin.get_spline()[0]
+        last_splint_point = cubsplin.get_spline()[-1]
 
-        plt.plot(s[:, 0], s[:, 1], 'b', label="cubic spline")  # spline
-        plt.plot(control[:, 0], control[:, 1], '-.r', label="control polygon")  # control polygon
-        plt.scatter(control[:, 0], control[:, 1], color='red')  # de Boor points
-
-        plt.title("Cubic Spline")
-        plt.legend()
-        plt.xlabel("x")
-        plt.ylabel("y")
-        plt.grid()
-        plt.show()
+        assert (first_inter_point == first_spline_point).all()
+        assert (last_inter_point == last_splint_point).all()
 
 
 if __name__=='__main__':

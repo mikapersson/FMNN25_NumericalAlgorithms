@@ -1,5 +1,9 @@
 from numpy import *
 
+"""
+@author: Mika Persson & Viktor Sambergs
+"""
+
 
 def basis_function(size, knots, j):
     """

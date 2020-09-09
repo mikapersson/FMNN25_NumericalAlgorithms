@@ -2,7 +2,7 @@ from numpy import *
 
 """
 Assignment 1
-authors: Mika Persson (mi3301pe-s@student.lu.se) and Viktor Sambergs (vi@student.lu.se)
+@author: Mika Persson & Viktor Sambergs
 """
 
 

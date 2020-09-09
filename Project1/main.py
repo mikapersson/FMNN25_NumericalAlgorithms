@@ -2,7 +2,7 @@ from CubicSpline import *
 from basis_function import basis_function
 
 """
-Authors: Mika Persson & Viktor Sambergs
+@author: Mika Persson & Viktor Sambergs
 """
 
 
@@ -62,6 +62,32 @@ def test_spline_blossoms(control, knots, index):
     cubsplin.plot_spline_blossoms(index)
 
 
+def test_bspline(control, knots):  # SEEMS TO WORK?
+    """
+     Test if Cubic Spline created from object CubicSpline equals the sum of the control points
+    and basis functions as in section 1.5
+    """
+    cubsplin = CubicSpline(control, knots)
+
+    size = 10000
+    bspline = zeros((size, 2))
+    basis_functions = array([basis_function(size, knots, j) for j in range(len(knots) - 2)])
+    for u in range(size):
+        bspline[u] = sum(control[i] * basis_functions[i, u] for i in range(len(basis_functions)))
+
+    plt.plot(cubsplin.get_spline()[:, 0], cubsplin.get_spline()[:, 1], 'r', label="cubic spline")  # spline
+    plt.plot(bspline[:, 0], bspline[:, 1], 'b', label="bspline")  # spline
+    # plt.plot(control[:, 0], control[:, 1], '-.r', label="control polygon")  # control polygon
+    # plt.scatter(control[:, 0], control[:, 1], color='red')  # de Boor points
+
+    plt.title("B-Spline")
+    plt.legend()
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.grid()
+    plt.show()
+
+
 def main():
     # We have two test sets
 
@@ -111,14 +137,14 @@ def main():
 
     # MANUAL TESTING AREA
 
-    test_spline(CONTROL, KNOTS)  # plot spline
-    test_basis_functions(KNOTS)       # plot basis functions
-    #test_bspline(test_control, test_knots)
+    #test_spline(CONTROL, KNOTS)  # plot spline
+    #test_basis_functions(KNOTS)       # plot basis functions
+    test_bspline(test_control, test_knots)
 
-    x = array(CONTROL[:, 0])
-    y = array(CONTROL[:, 1])
-    test_interpolate(CONTROL, KNOTS, x, y)
-    test_spline_blossoms(CONTROL, KNOTS, 2)  # THIS DOESN'T REALLY WORK
+    #x = array(CONTROL[:, 0])
+    #y = array(CONTROL[:, 1])
+    #test_interpolate(CONTROL, KNOTS, x, y)
+    #test_spline_blossoms(CONTROL, KNOTS, 2)  # THIS DOESN'T REALLY WORK
 
 
 # RUN PROGRAM
