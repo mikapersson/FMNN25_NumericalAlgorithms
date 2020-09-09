@@ -50,9 +50,7 @@ class CubicSpline:
         # Find hot interval. Index of the element with higher value (than u) - 1.
         I = (self.knot_points > u).argmax() - 1
 
-        if I == 0:
-            return self.control_points[0]
-        if I == -1:
+        if I == -1:  # for the case u_K <= u
             return self.control_points[-1]
 
         # Select 4 control points d_{I-2} to d_{I+1}
@@ -62,7 +60,7 @@ class CubicSpline:
         s = self.blossoms(four_control, self.knot_points, I, u)  # d[u,u,u] = s(u)
         return s
 
-    def blossoms(self, c, k, I, u, depth=3):
+    def blossoms(self, c, k, I, u, depth=2):
         """
         Evaluates s(u) in accordance with De Boor's algorithm (section 1.7 in the slides)
         :param c: (array) Array of "hot" control points of shape (4,)
@@ -112,7 +110,7 @@ class CubicSpline:
             return newcontrolpoints[0]
         else:
             depth -= 1
-            return self.blossoms(newcontrolpoints, k, I, u)
+            return self.blossoms(newcontrolpoints, k, I, u, depth)
 
     def interpolate(self, x, y):
         """
@@ -165,15 +163,15 @@ class CubicSpline:
         # Find blossoms ONLY WORKS FOR I>=2
         four_control = self.control_points[I-2:I+2].copy()                      # 4 "hot" knot points
         first_blossom = four_control[0]                                         # d[u_{i-2},u_{i-1},u_i]
-        second_blossom = self.blossoms(four_control, self.knot_points, I, I, 1) # d[u,u_{i-1},u_i]
-        third_blossom = self.blossoms(four_control, self.knot_points, I, I, 2)  # d[u,u,u_i]
+        second_blossom = self.blossoms(four_control, self.knot_points, I, I, 0) # d[u,u_{i-1},u_i]
+        third_blossom = self.blossoms(four_control, self.knot_points, I, I, 1)  # d[u,u,u_i]
 
         print(first_blossom)
         print(second_blossom)
         print(third_blossom)
 
         plt.plot(self.su[:, 0], self.su[:, 1], 'b', label="cubic spline")
-        plt.title("Cubic spline and blossoms for knot point {}".format(I))
+        plt.title("Cubic spline and blossoms for knot point {}".format("$u_{}$".format(I)))
         plt.plot(self.control_points[:, 0], self.control_points[:, 1], '-.r',
                  label="control polygon")  # control polygon
         plt.scatter(self.control_points[:, 0], self.control_points[:, 1], color='red')  # de Boor points

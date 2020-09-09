@@ -2,6 +2,9 @@ from greville_abscissae import greville_abscissae
 from basis_function import basis_function_rec
 from numpy import array, zeros
 
+"""
+Authors: Mika Persson & Viktor Sambergs
+"""
 
 def vandermonde(knots):
     """

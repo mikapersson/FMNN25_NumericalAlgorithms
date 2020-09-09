@@ -1,6 +1,10 @@
 from CubicSpline import *
 from basis_function import basis_function
 
+"""
+Authors: Mika Persson & Viktor Sambergs
+"""
+
 
 def test_spline(control, knots):
     """
@@ -12,35 +16,6 @@ def test_spline(control, knots):
 
     cubicspline = CubicSpline(control, knots)
     cubicspline.plot()
-
-'''
-def test_bspline(control, knots):
-    control = array(control)
-    size = 1000
-    s = zeros((size, 2))
-    basis_functions = array([basis_function(size, knots, i) for i in range(len(knots)-2)])
-    for u in range(size):
-        # Find hot interval. Index of the element with higher value (than u) - 1.
-        I = (knots > u).argmax() - 1
-
-        if I == 0:
-            s[u] = knots[0]
-        if I == -1:
-            s[u] = knots[-1]
-
-        s[u] = sum(control[i]*basis_functions[i, u] for i in range(I-2, I+2))  # change u in basis_function-argument
-
-    plt.plot(s[:, 0], s[:, 1], 'b', label="cubic spline")  # spline
-    plt.plot(control[:, 0], control[:, 1], '-.r', label="control polygon")  # control polygon
-    plt.scatter(control[:, 0], control[:, 1], color='red')  # de Boor points
-
-    plt.title("Cubic Spline")
-    plt.legend()
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.grid()
-    plt.show()
-'''
 
 
 def test_basis_functions(knots):
@@ -136,16 +111,17 @@ def main():
 
     # MANUAL TESTING AREA
 
-    #test_spline(test_control, test_knots)  # plot spline
-    #test_basis_functions(test_knots)       # plot basis functions
+    test_spline(CONTROL, KNOTS)  # plot spline
+    test_basis_functions(KNOTS)       # plot basis functions
     #test_bspline(test_control, test_knots)
 
-    #x = array(CONTROL[:, 0])
-    #y = array(CONTROL[:, 1])
-    #test_interpolate(CONTROL, KNOTS, x, y)
-    test_spline_blossoms(test_control, test_knots, 5)
+    x = array(CONTROL[:, 0])
+    y = array(CONTROL[:, 1])
+    test_interpolate(CONTROL, KNOTS, x, y)
+    test_spline_blossoms(CONTROL, KNOTS, 2)  # THIS DOESN'T REALLY WORK
 
 
+# RUN PROGRAM
 main()
 
 
