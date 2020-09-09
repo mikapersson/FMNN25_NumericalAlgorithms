@@ -82,9 +82,9 @@ def test_interpolate(control, knots, x, y):
     plt.show()
 
 
-def test_basis_blossoms(control, knots, index):
+def test_spline_blossoms(control, knots, index):
     cubsplin = CubicSpline(control, knots)
-    cubsplin.plot_basis_blossoms(index)
+    cubsplin.plot_spline_blossoms(index)
 
 
 def main():
@@ -143,7 +143,7 @@ def main():
     #x = array(CONTROL[:, 0])
     #y = array(CONTROL[:, 1])
     #test_interpolate(CONTROL, KNOTS, x, y)
-    test_basis_blossoms(test_control, test_knots, 5)
+    test_spline_blossoms(test_control, test_knots, 5)
 
 
 main()

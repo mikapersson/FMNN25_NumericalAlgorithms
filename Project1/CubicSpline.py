@@ -155,17 +155,12 @@ class CubicSpline:
         plt.grid()
         plt.show()
 
-    def plot_basis_blossoms(self, I):
+    def plot_spline_blossoms(self, I):
         """
         Plots the i:th basis function together with the blossoms d[u,u,u_i], d[u,u_{i-1},u_i] and d[u_{i-2},u_{i-1},u_i]
         :param I: (int)
         :return: None
         """
-        size = 1000
-        first_knot = self.knot_points[0]
-        last_knot = self.knot_points[-1]
-        xspace = linspace(first_knot, last_knot, size)
-        basis_func = basis_function(size, self.knot_points, I)
 
         # Find blossoms ONLY WORKS FOR I>=2
         four_control = self.control_points[I-2:I+2].copy()                      # 4 "hot" knot points
@@ -177,8 +172,11 @@ class CubicSpline:
         print(second_blossom)
         print(third_blossom)
 
-        plt.plot(xspace, basis_func, label="basis function")
-        plt.title("Basis function {} and blossoms".format("$N_{}^3$".format(I)))
+        plt.plot(self.su[:, 0], self.su[:, 1], 'b', label="cubic spline")
+        plt.title("Cubic spline and blossoms for knot point {}".format(I))
+        plt.plot(self.control_points[:, 0], self.control_points[:, 1], '-.r',
+                 label="control polygon")  # control polygon
+        plt.scatter(self.control_points[:, 0], self.control_points[:, 1], color='red')  # de Boor points
         plt.scatter(first_blossom[0], first_blossom[1], label="d[$u_{},u_{},u_{}$]".format({I-2}, {I-1},{I}))
         plt.scatter(first_blossom[0], first_blossom[1], label="d[$u,u_{},u_{}$]".format({I - 1}, {I}))
         plt.scatter(first_blossom[0], first_blossom[1], label="d[$u,u,u_{}$]".format({I}))
