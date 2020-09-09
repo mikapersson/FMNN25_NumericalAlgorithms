@@ -52,7 +52,7 @@ class TestSpline(unittest.TestCase):
             unity = 1
             self.assertAlmostEqual(s, unity)
 
-    def test_bspline(self):  # THIS TEST DOESN'T QUITE PASS
+    def test_bspline(self):  
         """
         Test if Cubic Spline created from object CubicSpline equals the sum of the control points
         and basis functions as in section 1.5
@@ -65,7 +65,7 @@ class TestSpline(unittest.TestCase):
         for u in range(size):
             bspline[u] = sum(self.test_control[i] * basis_functions[i, u] for i in range(len(basis_functions)))
 
-        assert_allclose(cubsplin.get_spline(), bspline)  # ERROR
+        assert_allclose(cubsplin.get_spline(), bspline)
 
     def test_interpolation(self):
         """

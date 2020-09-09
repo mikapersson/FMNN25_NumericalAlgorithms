@@ -137,13 +137,13 @@ def main():
 
     # MANUAL TESTING AREA
 
-    #test_spline(CONTROL, KNOTS)  # plot spline
-    #test_basis_functions(KNOTS)       # plot basis functions
-    test_bspline(test_control, test_knots)
+    test_spline(CONTROL, KNOTS)  # plot spline
+    test_basis_functions(KNOTS)       # plot basis functions
+    #test_bspline(test_control, test_knots)
 
-    #x = array(CONTROL[:, 0])
-    #y = array(CONTROL[:, 1])
-    #test_interpolate(CONTROL, KNOTS, x, y)
+    x = array(CONTROL[:, 0])
+    y = array(CONTROL[:, 1])
+    test_interpolate(CONTROL, KNOTS, x, y)
     #test_spline_blossoms(CONTROL, KNOTS, 2)  # THIS DOESN'T REALLY WORK
 
 

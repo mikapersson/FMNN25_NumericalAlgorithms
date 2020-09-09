@@ -27,10 +27,9 @@ class CubicSpline:
         self.knot_points = array(knots)
 
         size = 10000
-        self.su = zeros((size, 2))
+        self.su = empty((size, 2))
 
-        for i in range(0, size):  # Calculate the spline self.su
-            self.su[i] = self.__call__(i * len(self.knot_points) / (size-1))
+        self.su = array([self(i*len(self.knot_points) / (size - 1)) for i in range(size)])
 
     def get_spline(self):
         """
