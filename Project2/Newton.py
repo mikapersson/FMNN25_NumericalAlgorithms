@@ -9,13 +9,15 @@ We refer to the Lecture03 slides when we write "section (X.Y)"
 class Newton:
 
     def __init__(self, problem, lsm="inexact"):
-        self.epsilon = 0.0001           # step size for approximating derivatives
-        self.f = problem.function       # object function
-        self.n = 2                      # the dimension of the domain, R^n
-        self.alpha = 1                  # step size in the Newton Direction
-        self.values = array([])         # the values we obtain when iterating to the optimum solution
-        self.TOL = 1.e-8                # values under TOL are set to 0
-        self.start = ones((self.n, 1)) * 2  # where we start our iteration/algorithm
+        self.epsilon = 0.0001                         # step size for approximating derivatives
+        self.f = problem.function                     # object function
+        self.n = 2                                    # the dimension of the domain, R^n
+        self.alpha = 1                                # step size in the Newton Direction
+        self.values = array([])                       # the values we obtain when iterating to the optimum solution
+        self.TOL = 1.e-8                              # values under TOL are set to 0
+        self.start = ones((self.n, 1)) * 2            # where we start our iteration/algorithm
+        self.hessian = self.compute_hessian(self.start)   # current Hessian matrix (G)
+        self.inverted_hessian = linalg.inv(self.hessian)  # current inverted Hessian matrix (H)
 
         # Determining LSM
         valid_lsm = ["inexact", "exact"]  # valid line search methods
@@ -45,7 +47,7 @@ class Newton:
             g[i] = (self.f(x + e) - self.f(x - e)) / (2 * self.epsilon)  # (8.1) at p.195
         return g
 
-    def hessian(self, x):
+    def compute_hessian(self, x):
         """
         Computes the inverse hessian of f at the given point x by forward-difference (p.201 Nocedal, Wright)
         :return: nxn matrix
@@ -62,17 +64,24 @@ class Newton:
         G = (G + G.transpose()) / 2
         return G
 
-    def newton_direction(self, x):
+    def update_hessian(self, x_next):
         """
-        Computes the Newton direction, thus the direction in which we take steps towards the optimal solution
-        :param x: (array) where we stand at the moment
+        Updates the Hessian matrix and its inverse
+        :param x_next: (array) next point
+        :return: None
+        """
+
+        self.hessian = self.compute_hessian(x_next)
+        self.inverted_hessian = linalg.inv(self.hessian)
+
+    def step_direction(self, x):
+        """
+        Computes the step direction, usually denoted 's'
+        :param x: (array)
         :return: (array)
         """
 
-        inverse_hessian = linalg.inv(self.hessian(x))
-        g = self.gradient(x)
-        newton_direction = -inverse_hessian.dot(g)
-        return newton_direction
+        return -self.inverted_hessian@self.gradient(x)
 
     def newstep(self, x):
         """
@@ -80,9 +89,9 @@ class Newton:
         :return: (array)
         """
 
-        newton_direction = self.newton_direction(x)  # The Newton direction determines step direction.
-        new_coordinates = x + self.alpha * newton_direction
-
+        s = self.step_direction(x)  # Newton/step direction
+        new_coordinates = x + self.alpha * s
+        self.update_hessian(new_coordinates)
         return new_coordinates
 
     def linesearch(self, x):
@@ -93,7 +102,7 @@ class Newton:
         """
 
         object_function = self.f
-        s = self.newton_direction(x)
+        s = self.step_direction(x)
         if self.lsm == 'inexact':
             return inexact_linesearch(object_function, x, s, self.rho, self.sigma, self.tau, self.chi)
         elif self.lsm == 'exact':
@@ -111,7 +120,7 @@ class Newton:
         :return: (boolean) that is true if the criteria are fulfilled
         """
 
-        Hess = self.hessian(x)
+        Hess = self.hessian
         if not all(self.gradient(x) < self.TOL):
             return False
         """
@@ -136,7 +145,7 @@ class Newton:
         value = x
         self.values = value
         while solved is False:
-            self.alpha = self.linesearch(value)
+            self.alpha = self.linesearch(x)
             newvalue = self.newstep(value)
             value = newvalue
             solved = self.termination_criterion(value)

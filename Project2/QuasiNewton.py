@@ -8,8 +8,6 @@ class QuasiNewton(Newton):
 
     def __init__(self, problem, lsm="inexact"):
         super().__init__(problem, lsm)
-        self.hessian = self.hessian(self.start)  # current Hessian matrix (G)
-        self.invhessian = invert(self.hessian)  # current inverted Hessian matrix (H)
 
     def update_hessian(self, x_next, x_k):
         """
