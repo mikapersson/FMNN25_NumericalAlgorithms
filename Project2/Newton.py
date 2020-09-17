@@ -6,6 +6,7 @@ from linesearchmethods import exact_linesearch, inexact_linesearch
 We refer to the Lecture03 slides when we write "section (X.Y)"
 """
 
+
 class Newton:
 
     def __init__(self, problem, lsm="inexact"):
@@ -145,7 +146,7 @@ class Newton:
         value = x
         self.values = value
         while solved is False:
-            self.alpha = self.linesearch(x)
+            self.alpha = self.linesearch(value)
             newvalue = self.newstep(value)
             value = newvalue
             solved = self.termination_criterion(value)

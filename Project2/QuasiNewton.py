@@ -18,7 +18,7 @@ class QuasiNewton(Newton):
         """
 
     def newstep(self, x):
-        s = - self.invhessian@self.gradient(x)
+        s = self.step_direction(x)
         new_coordinates = x + self.alpha * s
         self.update_hessian(new_coordinates, x)
         return new_coordinates
@@ -33,10 +33,10 @@ class GoodBroyden(QuasiNewton):  # 3.17
     def update_hessian(self, x_next, x_k):
         delta_k = x_next - x_k
         gamma_k = self.gradient(x_next) - self.gradient(x_k)
-        H_km1 = self.invhessian  # "H k minus 1"
-        H_km1 = H_km1 + outer(delta_k - H_km1 * gamma_k, H_km1 * gamma_k) / \
-                       inner(H_km1 * delta_k, gamma_k)
-        self.invhessian = H_km1
+        H_km1 = self.inverted_hessian  # "H k minus 1"
+        H_km1 = H_km1 + outer(delta_k - H_km1@gamma_k, H_km1@gamma_k) / dot((H_km1@delta_k).T, gamma_k)
+
+        self.inverted_hessian = H_km1
 
 
 """
