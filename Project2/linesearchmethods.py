@@ -1,9 +1,26 @@
 # Some line search methods
 from math import inf
+from numpy import linspace
 
 
-def exact_linesearch(f, x):
-    pass
+def exact_linesearch(f, x, s):
+    """
+    Exact line search method as described in (3.3) p.31 Nocedal, Wright
+    :param f:
+    :param x:
+    :param s:
+    :return:
+    """
+    alphas = linspace(0, 2, 1000)
+    min_alpha = alphas[1]
+    min_value = inf
+    for alpha in alphas:
+        current_value = f(x + alpha * s)
+        if current_value < min_value:
+            min_alpha = alpha
+            min_value = current_value
+
+    return min_alpha
 
 
 def inexact_linesearch(f, x, s, rho, sigma, tau, chi):
@@ -19,15 +36,19 @@ def inexact_linesearch(f, x, s, rho, sigma, tau, chi):
     :return:
     """
     alpha_L = 0
-    alpha_0 = 0
-    alpha_U = inf
+    alpha_0 = 10
+    alpha_U = 10**99
 
     def f_alpha(alpha):  # defined in section 3.6 Lecture03
         return f(x + alpha * s)
 
     def f_prim_alpha(alpha):
         epsilon = 0.0001
-        return (f_alpha(alpha + epsilon) - f_alpha(alpha - epsilon)) / (2 * epsilon)
+        n1 = f_alpha(alpha + epsilon)
+        n2 = f_alpha(alpha - epsilon)
+        res = (n1 - n2) / (2 * epsilon)
+        #return (f_alpha(alpha + epsilon) - f_alpha(alpha - epsilon)) / (2 * epsilon)
+        return res
 
     def LC(alpha_0, alpha_L):  # Wolfe-Powell left condition, section 3.8
         return f_prim_alpha(alpha_0) >= sigma*f_prim_alpha(alpha_L)
@@ -58,10 +79,10 @@ def inexact_linesearch(f, x, s, rho, sigma, tau, chi):
         alpha_0 = bar_alpha_0
         return alpha_U, alpha_0
 
-    while not (LC(alpha_0, alpha_L) and RC(alpha_0, alpha_L)):  # while we don't satisfy LC AND RC
+    while not (LC(alpha_0, alpha_L) and RC(alpha_0, alpha_L)):  # while we don't satisfy LC AND RC CHECK
         if not LC(alpha_0, alpha_L):
             alpha_L, alpha_0 = block1(alpha_0, alpha_L)
         else:
-            alpha_U = alpha_0 = block2(alpha_0, alpha_L, alpha_U)
+            alpha_U, alpha_0 = block2(alpha_0, alpha_L, alpha_U)
 
-    return alpha_0, f_alpha(alpha_0)
+    return alpha_0  # , f_alpha(alpha_0)

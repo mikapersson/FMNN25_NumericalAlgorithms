@@ -7,6 +7,6 @@ class OptimizationProblem:
     Defines a problem, independent of solution method.
     """
 
-    def __init__(self, function, gradient):
+    def __init__(self, function, gradient=[]):
         self.function = function
         self.gradient = gradient

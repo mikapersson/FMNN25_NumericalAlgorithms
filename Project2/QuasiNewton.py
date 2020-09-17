@@ -1,11 +1,12 @@
 """Generic class for QuasiNewton"""
 from numpy import *
 from math import inf
+from linesearchmethods import exact_linesearch, inexact_linesearch
 
 
 class QuasiNewton:
 
-    def __init__(self, problem):
+    def __init__(self, problem, lsm='inexact'):
         self.epsilon = 0.0001      # step size
         self.f = problem.function  # object function
         self.n = 2                 # the dimension of the domain, R^n
@@ -13,11 +14,21 @@ class QuasiNewton:
         self.values = array([])    #
         self.TOL = 1.e-8           # tolerance for the 0-element
 
-        # PARAMETERS FOR INEXACT LINE SEARCH METHOD (slide 3.12 in Lecture03)
-        self.rho = 0.1
-        self.sigma = 0.7
-        self.tau = 0.1
-        self.chi = 9
+        # Determining LSM
+        valid_lsm = ["inexact", "exact"]  # valid line search methods
+        if lsm not in valid_lsm:
+            raise ValueError("Provided LSM \'{}\' does not exist, choose between \'inexact\' or \'exact\'".format(lsm))
+        elif lsm == 'inexact':
+            self.lsm = inexact_linesearch
+
+            # PARAMETERS FOR INEXACT LINE SEARCH METHOD (slide 3.12 in Lecture03)
+            self.rho = 0.1
+            self.sigma = 0.7
+            self.tau = 0.1
+            self.chi = 9
+
+        elif lsm == 'exact':
+            self.lsm = exact_linesearch
 
     def gradient(self, x):
         """
@@ -49,7 +60,12 @@ class QuasiNewton:
         return G
 
     def newton_direction(self, x):
-        """INTE ANVÄND ÄN. VET EJ OM VI KOMMER BEHÖVA DENNA SOM METOD"""
+        """
+
+        :param x:
+        :return:
+        """
+
         inverse_hessian = linalg.inv(self.hessian(x))
         g = self.gradient(x)
         newton_direction = -inverse_hessian.dot(g)
@@ -66,35 +82,15 @@ class QuasiNewton:
 
         return new_coordinates
 
+    def linesearch(self, x):
+        if self.lsm == 'inexact':
+            return inexact_linesearch(self.f, x, self.newton_direction(x), self.rho, self.sigma, self.tau, self.chi)
+        elif self.lsm == 'exact':
+            return exact_linesearch(self.f, x, self.newton_direction(x))
+
     def newHessian(self):
         """Returns Hessian. Overridden in 9 special methods"""
         return
-
-    def exactlinesearch(self, x):
-        """
-        Exact line search method as described in (3.3) p.31 Nocedal, Wright
-        :param x:
-        :return:
-        """
-        alphas = linspace(0, 2, 1000)
-        min_alpha = alphas[1]
-        direction = self.newton_direction(x)
-        min_value = inf
-        for alpha in alphas:
-            current_value = self.f(x + alpha * direction)
-            if current_value < min_value:
-                min_alpha = alpha
-                min_value = current_value
-
-        return min_alpha
-
-    @classmethod
-    def inexactlinesearch(cls):
-        pass
-
-    def inexactlinesearch(self):
-        """Defines inexact linesearch"""
-        return 1
 
     def termination_criterion(self, x):
         """
@@ -118,12 +114,12 @@ class QuasiNewton:
 
     def solve(self):
         x = ones((self.n, 1)) * 2
-        self.alpha = self.exactlinesearch(x)
+        self.alpha = self.linesearch(x)
         solved = self.termination_criterion(x)
         value = x
         self.values = value
         while solved is False:
-            self.alpha = self.exactlinesearch(x)
+            self.alpha = self.linesearch(x)
             newvalue = self.newstep(value)
             value = newvalue
             solved = self.termination_criterion(value)
