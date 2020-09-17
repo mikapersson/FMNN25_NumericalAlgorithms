@@ -6,7 +6,7 @@ from QuasiNewton import *
 from linesearchmethods import inexact_linesearch
 
 
-def rosenbrock(x):
+def rosenbrock(x):  # optimal solution is (1,1)
     if len(x) != 2:
         raise ValueError("Rosenbrock takes arguments from R^2, not R^{}".format(len(x)))
         return

@@ -82,7 +82,7 @@ class Newton:
         :return: (array)
         """
 
-        return -self.inverted_hessian@self.gradient(x)
+        return - self.inverted_hessian@self.gradient(x)
 
     def newstep(self, x):
         """
