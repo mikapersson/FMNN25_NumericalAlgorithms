@@ -49,9 +49,11 @@ def gradient(x):
     grad = cos(x[0])+cos(x[1])
     return grad
 
-
+"""
 problem = OptimizationProblem(rosenbrock, gradient)
 solution = QuasiNewton(problem)
 min_point, min_value = solution.solve()
 optipoints = solution.values
-contour_rosenbrock(optipoints=optipoints)
+contour_rosenbrock(optipoints=optipoints)"""
+
+x= QuasiNewton.inexactlinesearch

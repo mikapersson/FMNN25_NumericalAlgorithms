@@ -11,7 +11,13 @@ class QuasiNewton:
         self.n = 2                 # the dimension of the domain, R^n
         self.alpha = 1             #
         self.values = array([])    #
-        self.TOL = 1.e-8           #
+        self.TOL = 1.e-8           # tolerance for the 0-element
+
+        # PARAMETERS FOR INEXACT LINE SEARCH METHOD (slide 3.12 in Lecture03)
+        self.rho = 0.1
+        self.sigma = 0.7
+        self.tau = 0.1
+        self.chi = 9
 
     def gradient(self, x):
         """
@@ -44,10 +50,9 @@ class QuasiNewton:
 
     def newton_direction(self, x):
         """INTE ANVÄND ÄN. VET EJ OM VI KOMMER BEHÖVA DENNA SOM METOD"""
-        inverse_hessian = self.hessian(x)
+        inverse_hessian = linalg.inv(self.hessian(x))
         g = self.gradient(x)
-        newton_direction = inverse_hessian * g
-        print(newton_direction)
+        newton_direction = -inverse_hessian.dot(g)
         return newton_direction
 
     def newstep(self, x):
@@ -56,18 +61,9 @@ class QuasiNewton:
         :return: (array)
         """
 
-        inverse_hessian = linalg.inv(self.hessian(x))
-        print("Inverse Hess")
-        print(inverse_hessian)
-        g = self.gradient(x)
-        print("Gradient")
-        print(g)
+        newton_direction = self.newton_direction(x)  # The Newton direction determines step direction.
+        new_coordinates = x + self.alpha * newton_direction
 
-        newton_direction = inverse_hessian.dot(g)  # The Newton direction determines step direction.
-        print(newton_direction)
-        print("NEW")
-
-        new_coordinates = x - newton_direction
         return new_coordinates
 
     def newHessian(self):
@@ -80,9 +76,9 @@ class QuasiNewton:
         :param x:
         :return:
         """
-        alphas = linspace(1, 2, 1000)
+        alphas = linspace(0, 2, 1000)
         min_alpha = alphas[1]
-        direction = self.gradient(x)
+        direction = self.newton_direction(x)
         min_value = inf
         for alpha in alphas:
             current_value = self.f(x + alpha * direction)
@@ -91,6 +87,10 @@ class QuasiNewton:
                 min_value = current_value
 
         return min_alpha
+
+    @classmethod
+    def inexactlinesearch(cls):
+        pass
 
     def inexactlinesearch(self):
         """Defines inexact linesearch"""
@@ -128,4 +128,5 @@ class QuasiNewton:
             value = newvalue
             solved = self.termination_criterion(value)
             self.values = hstack([self.values, value])
+            print(self.alpha)
         return [value, self.f(value)]
