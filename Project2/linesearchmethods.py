@@ -54,7 +54,7 @@ def inexact_linesearch(f, x, s, rho, sigma, tau, chi):
         return f_prim_alpha(alpha_0) >= sigma*f_prim_alpha(alpha_L)
 
     def RC(alpha_0, alpha_L):  # Wolfe-Powell right condition, section 3.8
-        return f_alpha(alpha_0) <= f_alpha(alpha_L) + rho*(alpha_0 - alpha_L)*f_prim_alpha(alpha_L)
+        return f_alpha(alpha_0) <= (f_alpha(alpha_L) + rho*(alpha_0 - alpha_L)*f_prim_alpha(alpha_L))
 
     def extrapolate(alpha_0, alpha_L):  # section 3.11
         return (alpha_0 - alpha_L) * f_prim_alpha(alpha_0) / (f_prim_alpha(alpha_L) - f_prim_alpha(alpha_0))

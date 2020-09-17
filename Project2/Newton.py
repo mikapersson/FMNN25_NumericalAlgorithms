@@ -124,13 +124,13 @@ class Newton:
         Hess = self.hessian
         if not all(self.gradient(x) < self.TOL):
             return False
-        """
         else:
             try:
                 linalg.cholesky(Hess)
+                print("POSITIVE DEFINITE AND SYMMETRIC")
             except:
                 return False  # If the Choleskymethod gives error False is returned.
-        """
+
         print("SOLVED!")
         return True
 
@@ -146,10 +146,8 @@ class Newton:
         value = x
         self.values = value
         while solved is False:
-            self.alpha = self.linesearch(value)
             newvalue = self.newstep(value)
             value = newvalue
             solved = self.termination_criterion(value)
             self.values = hstack([self.values, value])
-            print(value)
         return [value, self.f(value)]
