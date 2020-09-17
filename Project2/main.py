@@ -16,6 +16,13 @@ def rosenbrock(x):
 
 
 def contour_rosenbrock(levels=100, optipoints=array([])):
+    """
+    Plots the contours of the rosenbrock function, alternatively together with the optimization points
+    :param levels: (int) number of level curves we want to display
+    :param optipoints: (array)
+    :return: None
+    """
+
     # Verifying that 'optipoints' has the correct shape
     if optipoints.shape == (0,):
         pass

@@ -1,27 +1,26 @@
 """Generic class for QuasiNewton"""
 from numpy import *
-from math import inf
 from linesearchmethods import exact_linesearch, inexact_linesearch
 
 
 class QuasiNewton:
 
     def __init__(self, problem, lsm="inexact"):
-        self.epsilon = 0.0001      # step size
+        self.epsilon = 0.0001      # step size for approximating derivatives
         self.f = problem.function  # object function
         self.n = 2                 # the dimension of the domain, R^n
-        self.alpha = 1             #
-        self.values = array([])    #
-        self.TOL = 1.e-8           # tolerance for the 0-element
+        self.alpha = 1             # step size in the Newton Direction
+        self.values = array([])    # the values we obtain when iterating to the optimum solution
+        self.TOL = 1.e-8           # values under TOL are set to 0
 
         # Determining LSM
         valid_lsm = ["inexact", "exact"]  # valid line search methods
         if lsm not in valid_lsm:
-            raise ValueError("Provided LSM \'{}\' does not exist, choose between \'inexact\' or \'exact\'".format(lsm))
+            raise ValueError("Provided LSM \'{}\' does not exist, choose between \'inexact\' and \'exact\'".format(lsm))
         elif lsm == "inexact":
             self.lsm = lsm
 
-            # PARAMETERS FOR INEXACT LINE SEARCH METHOD (slide 3.12 in Lecture03)
+            # Parameters for the inexact line search method (slide 3.12 in Lecture03)
             self.rho = 0.1
             self.sigma = 0.7
             self.tau = 0.1
@@ -61,9 +60,9 @@ class QuasiNewton:
 
     def newton_direction(self, x):
         """
-
-        :param x:
-        :return:
+        Computes the Newton direction, thus the direction in which we take steps towards the optimal solution
+        :param x: (array) where we stand at the moment
+        :return: (array)
         """
 
         inverse_hessian = linalg.inv(self.hessian(x))
@@ -83,10 +82,18 @@ class QuasiNewton:
         return new_coordinates
 
     def linesearch(self, x):
+        """
+        Solving the sub-problem of finding how far we take a step in the direction 's' computed below
+        :param x:
+        :return:
+        """
+
+        object_function = self.f
+        s = self.newton_direction(x)
         if self.lsm == 'inexact':
-            return inexact_linesearch(self.f, x, self.newton_direction(x), self.rho, self.sigma, self.tau, self.chi)
+            return inexact_linesearch(object_function, x, s, self.rho, self.sigma, self.tau, self.chi)
         elif self.lsm == 'exact':
-            return exact_linesearch(self.f, x, self.newton_direction(x))
+            return exact_linesearch(object_function, x, s)
 
     def newHessian(self):
         """Returns Hessian. Overridden in 9 special methods"""
@@ -95,10 +102,11 @@ class QuasiNewton:
     def termination_criterion(self, x):
         """
         Asserts that the criterions for optimum are fulfilled. The criterions are:
-        1.Hessian is symmetric and positive definite.
+        1. Hessian is symmetric and positive definite.
         2. The gradient is zero.
-        :return: boolean that is true if criteria are fulfilled
+        :return: (boolean) that is true if the criteria are fulfilled
         """
+
         Hess = self.hessian(x)
         if not all(self.gradient(x) < self.TOL):
             return False
@@ -113,17 +121,21 @@ class QuasiNewton:
         return True
 
     def solve(self):
+        """
+
+        :return: (list)
+        """
+
         x = ones((self.n, 1)) * 2
         self.alpha = self.linesearch(x)
         solved = self.termination_criterion(x)
         value = x
         self.values = value
         while solved is False:
-            print(self.alpha)
-            self.alpha = self.linesearch(x)
+            self.alpha = self.linesearch(value)
             newvalue = self.newstep(value)
             value = newvalue
             solved = self.termination_criterion(value)
             self.values = hstack([self.values, value])
-            print(self.alpha)
+            print(value)
         return [value, self.f(value)]
