@@ -1,7 +1,8 @@
 from numpy import *
-from OptimizationProblem import*
+from OptimizationProblem import *
 import matplotlib.pyplot as plt
-from QuasiNewton import*
+from Newton import *
+from QuasiNewton import *
 from linesearchmethods import inexact_linesearch
 
 
@@ -72,8 +73,11 @@ def task7():
     print(res)
 
 
+
 problem = OptimizationProblem(rosenbrock)
-solution = QuasiNewton(problem)
+solution = Newton(problem)
 min_point, min_value = solution.solve()
 optipoints = solution.values
 contour_rosenbrock(optipoints=optipoints)
+
+# q = QuasiNewton(problem)
