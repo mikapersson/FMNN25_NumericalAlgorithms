@@ -8,8 +8,10 @@ class QuasiNewton:
     def __init__(self, problem):
         self.epsilon = 0.0001      # step size
         self.f = problem.function  # object function
-        self.n = 2  # the dimension of the domain, R^n
-        self.alpha = 1
+        self.n = 2                 # the dimension of the domain, R^n
+        self.alpha = 1             #
+        self.values = array([])    #
+        self.TOL = 1.e-8           #
 
     def gradient(self, x):
         """
@@ -102,7 +104,7 @@ class QuasiNewton:
         :return: boolean that is true if criteria are fulfilled
         """
         Hess = self.hessian(x)
-        if self.gradient(x).all() != 0.00:
+        if not all(self.gradient(x) < self.TOL):
             return False
         """
         else:
@@ -115,17 +117,15 @@ class QuasiNewton:
         return True
 
     def solve(self):
-        x = zeros((2, 1))
-        x[0] = 1
-        x[1] = 1
+        x = ones((self.n, 1)) * 2
         self.alpha = self.exactlinesearch(x)
         solved = self.termination_criterion(x)
         value = x
-        values = [value]
+        self.values = value
         while solved is False:
             self.alpha = self.exactlinesearch(x)
             newvalue = self.newstep(value)
             value = newvalue
             solved = self.termination_criterion(value)
-            values = [values, value]
+            self.values = hstack([self.values, value])
         return [value, self.f(value)]

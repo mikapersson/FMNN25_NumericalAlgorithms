@@ -15,10 +15,13 @@ def rosenbrock(x):
 
 
 def contour_rosenbrock(levels=100, optipoints=array([])):
-    if optipoints.shape == (0,) or optipoints.ndim == 2:
+    # Verifying that 'optipoints' has the correct shape
+    if optipoints.shape == (0,):
+        pass
+    elif optipoints.ndim == 2 and len(optipoints) == 2:  # optipoints is an ndarray with 2 rows
         pass
     else:
-        raise ValueError("\'optipoints\' must have exactly 2 columns")
+        raise ValueError("\'optipoints\' must have exactly 2 rows")
 
     size = 1000
     x = linspace(-0.5, 2, size)
@@ -28,7 +31,7 @@ def contour_rosenbrock(levels=100, optipoints=array([])):
     Z = rosenbrock(input)
 
     if len(optipoints) != 0:  # plot optimization points (either optipoints is empty or has 2 columns)
-        plt.scatter(optipoints[:, 0], optipoints[:, 1])
+        plt.scatter(optipoints[0, :], optipoints[1, :])
 
     plt.contour(X, Y, Z, levels)
     plt.title("Contour plot of Rosenbrock's function")
@@ -47,9 +50,8 @@ def gradient(x):
     return grad
 
 
-# problem = OptimizationProblem(function, gradient)
-#solution = QuasiNewton(problem)
-#a = solution.solve()
-#print(a)
-
-contour_rosenbrock()
+problem = OptimizationProblem(rosenbrock, gradient)
+solution = QuasiNewton(problem)
+min_point, min_value = solution.solve()
+optipoints = solution.values
+contour_rosenbrock(optipoints=optipoints)
