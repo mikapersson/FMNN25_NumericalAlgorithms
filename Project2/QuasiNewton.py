@@ -6,7 +6,7 @@ from math import inf
 class QuasiNewton:
 
     def __init__(self, problem):
-        self.epsilon = 0.0001  # step size
+        self.epsilon = 0.0001      # step size
         self.f = problem.function  # object function
         self.n = 2  # the dimension of the domain, R^n
         self.alpha = 1
@@ -78,7 +78,7 @@ class QuasiNewton:
         :param x:
         :return:
         """
-        alphas = linspace(0, 2, 1000)
+        alphas = linspace(1, 2, 1000)
         min_alpha = alphas[1]
         direction = self.gradient(x)
         min_value = inf
@@ -104,12 +104,13 @@ class QuasiNewton:
         Hess = self.hessian(x)
         if self.gradient(x).all() != 0.00:
             return False
+        """
         else:
             try:
                 linalg.cholesky(Hess)
             except:
                 return False  # If the Choleskymethod gives error False is returned.
-
+        """
         print("SOLVED!")
         return True
 
@@ -117,12 +118,14 @@ class QuasiNewton:
         x = zeros((2, 1))
         x[0] = 1
         x[1] = 1
+        self.alpha = self.exactlinesearch(x)
         solved = self.termination_criterion(x)
         value = x
         values = [value]
         while solved is False:
+            self.alpha = self.exactlinesearch(x)
             newvalue = self.newstep(value)
             value = newvalue
             solved = self.termination_criterion(value)
             values = [values, value]
-        return value
+        return [value, self.f(value)]
