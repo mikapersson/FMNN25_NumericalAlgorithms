@@ -6,7 +6,7 @@ from linesearchmethods import exact_linesearch, inexact_linesearch
 
 class QuasiNewton:
 
-    def __init__(self, problem, lsm='inexact'):
+    def __init__(self, problem, lsm="inexact"):
         self.epsilon = 0.0001      # step size
         self.f = problem.function  # object function
         self.n = 2                 # the dimension of the domain, R^n
@@ -18,8 +18,8 @@ class QuasiNewton:
         valid_lsm = ["inexact", "exact"]  # valid line search methods
         if lsm not in valid_lsm:
             raise ValueError("Provided LSM \'{}\' does not exist, choose between \'inexact\' or \'exact\'".format(lsm))
-        elif lsm == 'inexact':
-            self.lsm = inexact_linesearch
+        elif lsm == "inexact":
+            self.lsm = lsm
 
             # PARAMETERS FOR INEXACT LINE SEARCH METHOD (slide 3.12 in Lecture03)
             self.rho = 0.1
@@ -27,8 +27,8 @@ class QuasiNewton:
             self.tau = 0.1
             self.chi = 9
 
-        elif lsm == 'exact':
-            self.lsm = exact_linesearch
+        elif lsm == "exact":
+            self.lsm = lsm
 
     def gradient(self, x):
         """
@@ -119,6 +119,7 @@ class QuasiNewton:
         value = x
         self.values = value
         while solved is False:
+            print(self.alpha)
             self.alpha = self.linesearch(x)
             newvalue = self.newstep(value)
             value = newvalue
