@@ -75,10 +75,10 @@ def task7():
 
 
 problem = OptimizationProblem(rosenbrock)
-solution = SymmetricBroyden(problem)
+solution = GoodBroyden(problem)
 min_point, min_value = solution.solve()
 optipoints = solution.values
-print(optipoints)
+print(optipoints[:, -1])
 contour_rosenbrock(optipoints=optipoints)
 
 # q = QuasiNewton(problem)
