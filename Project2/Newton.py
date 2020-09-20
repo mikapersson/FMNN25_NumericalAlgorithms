@@ -15,7 +15,7 @@ class Newton:
         self.n = 2                                    # the dimension of the domain, R^n
         self.alpha = 1                                # step size in the Newton Direction
         self.values = array([])                       # the values we obtain when iterating to the optimum solution
-        self.TOL = 1.e-6                              # values under TOL are set to 0
+        self.TOL = 1.e-10                              # values under TOL are set to 0
         self.start = ones((self.n, 1)) * 2            # where we start our iteration/algorithm
         self.hessian = self.compute_hessian(self.start)   # current Hessian matrix (G)
         self.inverted_hessian = linalg.inv(self.hessian)  # current inverted Hessian matrix (H)
