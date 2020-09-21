@@ -6,9 +6,6 @@ class QuasiNewton(Newton):
     Subclass to Newton, collecting the common methods for the deriving QuasiNewton methods (below this class)
     """
 
-    def __init__(self, problem, lsm="inexact"):
-        super().__init__(problem, lsm)
-
     def update_hessian(self, x_next, x_k):
         """
         Abstract method for updating self.hessian
@@ -33,8 +30,18 @@ class GoodBroyden(QuasiNewton):  # 3.17
     def update_hessian(self, x_next, x_k):
         delta_k = x_next - x_k
         gamma_k = self.gradient(x_next) - self.gradient(x_k)
+        print("i")
+        if (gamma_k == zeros((2, 1))).all():
+            #self.inverted_hessian =
+            return
+
         H_km1 = self.inverted_hessian  # "H k minus 1"
-        H_k = H_km1 + outer(delta_k - H_km1@gamma_k, H_km1@gamma_k) / dot((H_km1@delta_k).T, gamma_k)
+        u = H_km1@delta_k
+        nominator = (delta_k - H_km1@delta_k) @ u.T
+        denominator = u.T @ gamma_k
+        #H_k = H_km1 + outer(delta_k - H_km1@gamma_k, H_km1@gamma_k) / inner((H_km1@delta_k), gamma_k)
+        H_k = H_km1 + nominator/denominator
+        print(gamma_k)
 
         self.inverted_hessian = H_k
 

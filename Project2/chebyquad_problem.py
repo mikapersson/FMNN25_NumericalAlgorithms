@@ -7,9 +7,8 @@ Claus Führer (2016)
 
 """
 
-from  scipy import dot,linspace
 import scipy.optimize as so
-from numpy import array
+from numpy import *
 
 
 def T(x, n):
@@ -24,6 +23,7 @@ def T(x, n):
         return x
     return 2. * x * T(x, n - 1) - T(x, n - 2)
 
+
 def U(x, n):
     """
     Recursive evaluation of the Chebychev Polynomials of the second kind
@@ -36,7 +36,8 @@ def U(x, n):
     if n == 1:
         return 2. * x
     return 2. * x * U(x, n - 1) - U(x, n - 2) 
-    
+
+
 def chebyquad_fcn(x):
     """
     Nonlinear function: R^n -> R^n
@@ -63,12 +64,14 @@ def chebyquad_fcn(x):
         return sum(T(2. * xj - 1., i) for xj in x) / n
     return array([approx_integral(i) - e for i,e in enumerate(exint)]) 
 
+
 def chebyquad(x):
     """            
     norm(chebyquad_fcn)**2                
     """
     chq = chebyquad_fcn(x)
     return dot(chq, chq)
+
 
 def gradchebyquad(x):
     """
@@ -78,7 +81,8 @@ def gradchebyquad(x):
     UM = 4. / len(x) * array([[(i+1) * U(2. * xj - 1., i) 
                              for xj in x] for i in range(len(x) - 1)])
     return dot(chq[1:].reshape((1, -1)), UM).reshape((-1, ))
-    
+
+
 if __name__ == '__main__':
     x=linspace(0,1,8)
     xmin= so.fmin_bfgs(chebyquad,x,gradchebyquad)  # should converge after 18 iterations  

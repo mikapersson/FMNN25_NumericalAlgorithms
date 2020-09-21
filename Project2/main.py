@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from Newton import *
 from QuasiNewton import *
 from linesearchmethods import inexact_linesearch
+from chebyquad_problem import *
+import scipy.optimize as opt
 
 
 def rosenbrock(x):  # optimal solution is (1,1)
@@ -73,12 +75,39 @@ def task7():
     print(res)
 
 
+def test_newton_methods(method="newton"):
+    valid_methods = {"newton" : Newton, "goodBroyden" : GoodBroyden, "badBroyden" : BadBroyden
+                        , "symmetricBroyden" : SymmetricBroyden, "DFP" : DFP, "BFGS" : BFGS}
 
-problem = OptimizationProblem(rosenbrock)
-solution = Newton(problem)
-min_point, min_value = solution.solve()
-optipoints = solution.values
-print(min_point)
-contour_rosenbrock(optipoints=optipoints)
+    if method not in valid_methods:
+        print("Method \'{}\' does not exist, choose one of the following:\n\t\'newton\', \'goodBroyden\', \'badBroyden\', \'symmetricBroyden\', \'DFP\', \'BFGS\'".format(method))
+        print("Exiting program.")
+        return
 
-# q = QuasiNewton(problem)
+    problem = OptimizationProblem(rosenbrock)
+    solution = valid_methods[method](problem)
+
+    print("Runnting {} method".format(method))
+    min_point, min_value = solution.solve()
+    optipoints = solution.values
+    print("\nOptimal point:\n", min_point)
+    print("\nMinimum value:\n", min_value)
+    contour_rosenbrock(optipoints=optipoints)
+
+
+def test_chebyquad():
+    problem = OptimizationProblem(chebyquad)
+
+    scalar = 1
+    ns = [4, 8, 11]
+    for n in ns:
+        solution = Newton(problem)
+        min_point, min_value = solution.solve()
+        min2 = opt.fmin(chebyquad, ones((n, 1)) * scalar, gradchebyquad)
+
+
+def main():
+    test_newton_methods("goodBroyd")
+
+
+main()

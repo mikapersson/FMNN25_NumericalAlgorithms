@@ -9,14 +9,14 @@ We refer to the Lecture03 slides when we write "section (X.Y)"
 
 class Newton:
 
-    def __init__(self, problem, lsm="inexact"):
+    def __init__(self, problem, n=2, lsm="inexact"):
         self.epsilon = 0.000001                      # step size for approximating derivatives
         self.f = problem.function                     # object function
-        self.n = 2                                    # the dimension of the domain, R^n
+        self.n = n                                    # the dimension of the domain, R^n
         self.alpha = 1                                # step size in the Newton Direction
         self.values = array([])                       # the values we obtain when iterating to the optimum solution
         self.TOL = 1.e-5                              # values under TOL are set to 0
-        self.start = ones((self.n, 1)) * 2            # where we start our iteration/algorithm
+        self.start = ones((self.n, 1)) * 50            # where we start our iteration/algorithm
         self.hessian = self.compute_hessian(self.start)   # current Hessian matrix (G)
         self.inverted_hessian = linalg.inv(self.hessian)  # current inverted Hessian matrix (H)
 
@@ -127,11 +127,11 @@ class Newton:
         else:
             try:
                 linalg.cholesky(Hess)
-                print("POSITIVE DEFINITE AND SYMMETRIC")
+                #print("POSITIVE DEFINITE AND SYMMETRIC")
             except:
                 return False  # If the Choleskymethod gives error False is returned.
 
-        print("SOLVED!")
+        print("SOLVED!\nNumber of iterations: {}".format(len(self.values[0])))
         return True
 
     def solve(self):

@@ -43,7 +43,7 @@ def inexact_linesearch(f, x, s, rho, sigma, tau, chi):
         return f(x + alpha * s)
 
     def f_prim_alpha(alpha):
-        epsilon = 0.00000001
+        epsilon = 1.e-10
         n1 = f_alpha(alpha + epsilon)
         n2 = f_alpha(alpha - epsilon)
         res = (n1 - n2) / (2 * epsilon)
