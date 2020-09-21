@@ -36,14 +36,14 @@ def inexact_linesearch(f, x, s, rho, sigma, tau, chi):
     :return:
     """
     alpha_L = 0
-    alpha_0 = 10
+    alpha_0 = 1
     alpha_U = 10**99
 
     def f_alpha(alpha):  # defined in section 3.6 Lecture03
         return f(x + alpha * s)
 
     def f_prim_alpha(alpha):
-        epsilon = 0.0001
+        epsilon = 0.00000001
         n1 = f_alpha(alpha + epsilon)
         n2 = f_alpha(alpha - epsilon)
         res = (n1 - n2) / (2 * epsilon)
@@ -60,8 +60,8 @@ def inexact_linesearch(f, x, s, rho, sigma, tau, chi):
         return (alpha_0 - alpha_L) * f_prim_alpha(alpha_0) / (f_prim_alpha(alpha_L) - f_prim_alpha(alpha_0))
 
     def interpolate(alpha_0, alpha_L):  # section 3.11
-        return ((alpha_0 - alpha_L)**2 * f_prim_alpha(alpha_L)) / (2 * (f_alpha(alpha_L) - f_alpha(alpha_0)) +
-                                                                   (alpha_0 - alpha_L)*f_prim_alpha(alpha_L))
+        return ((alpha_0 - alpha_L)**2 * f_prim_alpha(alpha_L)) / (2 * (f_alpha(alpha_L) - f_alpha(alpha_0) +
+                                                                   (alpha_0 - alpha_L)*f_prim_alpha(alpha_L)))
 
     def block1(alpha_0, alpha_L):  # Block 1, section 3.10
         delta_alpha_0 = extrapolate(alpha_0, alpha_L)

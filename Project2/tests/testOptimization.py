@@ -22,6 +22,7 @@ class TestOptimization(unittest.TestCase):
     problem = OptimizationProblem(f)
     solution = array([[1],
                       [1]])
+    TOL = 1.e-5
 
     def test_gradient(self):
         pass
@@ -32,7 +33,7 @@ class TestOptimization(unittest.TestCase):
     def test_newton(self):
         newton_solver = Newton(self.problem)
         optimum, optimum_value = newton_solver.solve()
-        assert_almost_equal(self.solution, optimum)
+        assert_almost_equal(self.solution, optimum, decimal=5)
 
     def test_good_broyden(self):
         pass

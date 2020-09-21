@@ -10,12 +10,12 @@ We refer to the Lecture03 slides when we write "section (X.Y)"
 class Newton:
 
     def __init__(self, problem, lsm="inexact"):
-        self.epsilon = 0.0001                         # step size for approximating derivatives
+        self.epsilon = 0.000001                      # step size for approximating derivatives
         self.f = problem.function                     # object function
         self.n = 2                                    # the dimension of the domain, R^n
         self.alpha = 1                                # step size in the Newton Direction
         self.values = array([])                       # the values we obtain when iterating to the optimum solution
-        self.TOL = 1.e-10                              # values under TOL are set to 0
+        self.TOL = 1.e-5                              # values under TOL are set to 0
         self.start = ones((self.n, 1)) * 2            # where we start our iteration/algorithm
         self.hessian = self.compute_hessian(self.start)   # current Hessian matrix (G)
         self.inverted_hessian = linalg.inv(self.hessian)  # current inverted Hessian matrix (H)
@@ -42,9 +42,9 @@ class Newton:
         :return: (array)
         """
         g = empty((self.n, 1))
-        for i in range(self.n):  # for every coordinate of x
+        for i in range(self.n):     # for every coordinate of x
             e = zeros((self.n, 1))  # unit vectors in the domain
-            e[i] = self.epsilon  # we want to take a step in the i:th direction
+            e[i] = self.epsilon     # we want to take a step in the i:th direction
             g[i] = (self.f(x + e) - self.f(x - e)) / (2 * self.epsilon)  # (8.1) at p.195
         return g
 
@@ -145,7 +145,7 @@ class Newton:
         value = x
         self.values = value
         while solved is False:
-            self.alpha = self.linesearch(x)
+            self.alpha = self.linesearch(value)
             newvalue = self.newstep(value)
             value = newvalue
             solved = self.termination_criterion(value)
