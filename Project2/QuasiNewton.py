@@ -30,15 +30,10 @@ class GoodBroyden(QuasiNewton):  # 3.17
     def update_hessian(self, x_next, x_k):
         delta_k = x_next - x_k
         gamma_k = self.gradient(x_next) - self.gradient(x_k)
-        if (gamma_k == zeros((2, 1))).all():
-            #self.inverted_hessian =
-            return
-
         H_km1 = self.inverted_hessian  # "H k minus 1"
         u = H_km1@delta_k
         nominator = (delta_k - H_km1@delta_k) @ u.T
         denominator = u.T @ gamma_k
-        #H_k = H_km1 + outer(delta_k - H_km1@gamma_k, H_km1@gamma_k) / inner((H_km1@delta_k), gamma_k)
         H_k = H_km1 + nominator/denominator
 
         self.inverted_hessian = H_k
@@ -56,7 +51,7 @@ class BadBroyden(QuasiNewton):  # 3.18
         self.inverted_hessian = H_k
 
 
-class SymmetricBroyden(QuasiNewton):  # 3.20
+class SymmetricBroyden(QuasiNewton):  # 3.20 (errors can occur)
     def update_hessian(self, x_next, x_k):
         delta_k = x_next - x_k
         gamma_k = self.gradient(x_next) - self.gradient(x_k)
@@ -73,18 +68,27 @@ class DFP(QuasiNewton):  # 3.21
         delta_k = x_next - x_k
         gamma_k = self.gradient(x_next) - self.gradient(x_k)
         H_km1 = self.inverted_hessian  # "H k minus 1"
-        H_k = H_km1 + outer(delta_k, delta_k)/inner(delta_k, gamma_k) - (H_km1@gamma_k@inner(gamma_k, H_km1))/(inner(gamma_k, H_km1)@gamma_k)
+        a = outer(delta_k, delta_k)
+        b = transpose(delta_k) @ gamma_k
+        c = H_km1 @ gamma_k @ transpose(gamma_k) @ H_km1
+        d = transpose(gamma_k) @ H_km1 @ gamma_k
+        H_k = H_km1 + a / b - c / d
 
         self.inverted_hessian = H_k
 
 
-class BFGS(QuasiNewton):  # 3.22
+class BFGS(QuasiNewton):  # 3.22 (errors can occur)
     def update_hessian(self, x_next, x_k):
         delta_k = x_next - x_k
         gamma_k = self.gradient(x_next) - self.gradient(x_k)
         H_km1 = self.inverted_hessian  # "H k minus 1"
-        H_k = H_km1 + (1 + (inner(gamma_k, H_km1)@gamma_k)/inner(delta_k, gamma_k))*outer(delta_k, delta_k)/inner(delta_k, gamma_k) - \
-            (outer(delta_k, gamma_k)@H_km1 + H_km1@outer(gamma_k, delta_k))/inner(delta_k, gamma_k)
+        a = transpose(gamma_k) @ H_km1 @ gamma_k
+        b = transpose(delta_k) @ gamma_k
+        c = delta_k @ transpose(delta_k)
+        d = transpose(delta_k) @ gamma_k
+        f = delta_k @ transpose(gamma_k) @ H_km1 + H_km1 @ gamma_k @ transpose(delta_k)
+        g = transpose(delta_k) @ gamma_k
+        H_k = H_km1 + (1 + a / b) * (c / d) - (f / g)
 
         self.inverted_hessian = H_k
 
