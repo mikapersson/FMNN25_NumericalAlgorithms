@@ -51,7 +51,7 @@ def contour_rosenbrock(levels=100, optipoints=array([])):
     plt.show()
 
 
-def function(x):
+def simple_function(x):
     value = 3*sin(x[0]) + sin(x[1])
     return value
 
@@ -82,28 +82,36 @@ def newton_methods(problem=None):
     :return:
     """
 
+    # Let the user choose method
+    method = input("Testing Newton methods, choose one of the following:\n\t\'newton\', \'goodBroyden\', \'badBroyden\', \'symmetricBroyden\', \'DFP\', \'BFGS\'\nMethod: ")
+
     # Check that the chosen method is valid
-    valid_methods = {"newton" : Newton, "goodBroyden" : GoodBroyden, "badBroyden" : BadBroyden
-                        , "symmetricBroyden" : SymmetricBroyden, "DFP" : DFP, "BFGS" : BFGS}
-
-    method = input("Testing Newton methods, choose one of the following:\n\t\'newton\', \'goodBroyden\', \'badBroyden\', \'symmetricBroyden\', \'DFP\', \'BFGS\'\nchoice: ")
-
+    valid_methods = {"newton": Newton, "goodBroyden": GoodBroyden, "badBroyden": BadBroyden
+                        , "symmetricBroyden": SymmetricBroyden, "DFP": DFP, "BFGS": BFGS}
     while method not in valid_methods:
         print("\nMethod \'{}\' does not exist, choose one of the following:\n\t\'newton\', \'goodBroyden\', \'badBroyden\', \'symmetricBroyden\', \'DFP\', \'BFGS\'".format(method))
-        method = input("Choice: ")
+        method = input("Method: ")
 
-    if not problem:  # if we didn't specify a problem we take the rosenbrock function
-        print("Running default problem")
-        problem = OptimizationProblem(rosenbrock)
+    if not problem:  # if we didn't specify a problem we take the 'simple_function'
+        print("Using default problem")
+        problem = OptimizationProblem(simple_function)
 
-    solution = valid_methods[method](problem)
+    # Choose linesearch method
+    lsm = input("\nChoose line search method:\t\'exact\' or \'inexact\'\nLSM: ")
 
-    print("\nRunning {} method".format(method))
-    min_point, min_value = solution.solve()
-    optipoints = solution.values
+    # Create solver-instance
+    try:
+        solver = valid_methods[method](problem, lsm)
+    except ValueError:
+        lsm = input("\nLSM \'{}\' does not exist, choose between \'exact\' and \'inexact\'\nLSM: ".format(lsm))
+        solver = valid_methods[method](problem, lsm)
+
+    print("\nRunning {} method with {} line search".format(method, lsm))
+    min_point, min_value = solver.solve()
+    optipoints = solver.values
     print("\nOptimal point:\n", min_point)
     print("\nMinimum value:\n", min_value)
-    contour_rosenbrock(optipoints=optipoints)
+    # contour_rosenbrock(optipoints=optipoints)  # uncomment to plot rosenbrock_contour and optimization points
 
 
 def chebyquad():

@@ -150,7 +150,6 @@ class Newton:
         value = x
         self.values = value
         while solved is False:
-            print(self.alpha)
             self.alpha = self.linesearch(value)
             newvalue = self.newstep(value)
             value = newvalue

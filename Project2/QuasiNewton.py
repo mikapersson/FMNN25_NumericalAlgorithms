@@ -49,7 +49,9 @@ class BadBroyden(QuasiNewton):  # 3.18
         delta_k = x_next - x_k
         gamma_k = self.gradient(x_next) - self.gradient(x_k)
         H_km1 = self.inverted_hessian  # "H k minus 1"
-        H_k = H_km1 + outer((delta_k- H_km1@gamma_k)/inner(gamma_k, gamma_k), gamma_k)  # SOMETHING WRONG HERE
+        nominator = delta_k - H_km1@gamma_k
+        denominator = gamma_k.T@gamma_k
+        H_k = H_km1 + outer(nominator/denominator, gamma_k)
 
         self.inverted_hessian = H_k
 
