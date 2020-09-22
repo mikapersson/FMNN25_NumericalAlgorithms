@@ -75,7 +75,7 @@ def task7():
     print(res)
 
 
-def test_newton_methods():
+def newton_methods():
     # Check that the chosen method is valid
     valid_methods = {"newton" : Newton, "goodBroyden" : GoodBroyden, "badBroyden" : BadBroyden
                         , "symmetricBroyden" : SymmetricBroyden, "DFP" : DFP, "BFGS" : BFGS}
@@ -97,7 +97,7 @@ def test_newton_methods():
     contour_rosenbrock(optipoints=optipoints)
 
 
-def test_chebyquad():
+def chebyquad():
     problem = OptimizationProblem(chebyquad)
 
     scalar = 1
@@ -109,7 +109,7 @@ def test_chebyquad():
 
 
 def main():
-    test_newton_methods()
+    newton_methods()
 
 
 main()

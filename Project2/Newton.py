@@ -16,9 +16,14 @@ class Newton:
         self.alpha = 1                                # step size in the Newton Direction
         self.values = array([])                       # the values we obtain when iterating to the optimum solution
         self.TOL = 1.e-5                              # values under TOL are set to 0
-        self.start = ones((self.n, 1)) * 50            # where we start our iteration/algorithm
+        self.start = ones((self.n, 1)) * 4            # where we start our iteration/algorithm
         self.hessian = self.compute_hessian(self.start)   # current Hessian matrix (G)
         self.inverted_hessian = linalg.inv(self.hessian)  # current inverted Hessian matrix (H)
+
+        if problem.gradient:
+            self.gradient = problem.gradient
+        else:
+            self.gradient = self.compute_gradient
 
         # Determining LSM
         valid_lsm = ["inexact", "exact"]  # valid line search methods
@@ -36,7 +41,7 @@ class Newton:
         elif lsm == "exact":
             self.lsm = lsm
 
-    def gradient(self, x):
+    def compute_gradient(self, x):
         """
         Computes the gradient of f at the given point x by central-difference ((8.7) p.196 Nocedal, Wright)
         :return: (array)
