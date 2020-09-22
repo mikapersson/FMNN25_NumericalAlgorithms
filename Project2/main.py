@@ -75,7 +75,13 @@ def task7():
     print(res)
 
 
-def newton_methods():
+def newton_methods(problem=None):
+    """
+    Test Quasi Newton methods on the (optionally specified) 'problem'
+    :param problem:
+    :return:
+    """
+
     # Check that the chosen method is valid
     valid_methods = {"newton" : Newton, "goodBroyden" : GoodBroyden, "badBroyden" : BadBroyden
                         , "symmetricBroyden" : SymmetricBroyden, "DFP" : DFP, "BFGS" : BFGS}
@@ -86,7 +92,10 @@ def newton_methods():
         print("\nMethod \'{}\' does not exist, choose one of the following:\n\t\'newton\', \'goodBroyden\', \'badBroyden\', \'symmetricBroyden\', \'DFP\', \'BFGS\'".format(method))
         method = input("Choice: ")
 
-    problem = OptimizationProblem(rosenbrock)
+    if not problem:  # if we didn't specify a problem we take the rosenbrock function
+        print("Running default problem")
+        problem = OptimizationProblem(rosenbrock)
+
     solution = valid_methods[method](problem)
 
     print("\nRunning {} method".format(method))

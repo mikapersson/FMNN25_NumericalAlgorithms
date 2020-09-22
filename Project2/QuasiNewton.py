@@ -30,7 +30,6 @@ class GoodBroyden(QuasiNewton):  # 3.17
     def update_hessian(self, x_next, x_k):
         delta_k = x_next - x_k
         gamma_k = self.gradient(x_next) - self.gradient(x_k)
-        print("i")
         if (gamma_k == zeros((2, 1))).all():
             #self.inverted_hessian =
             return
@@ -41,7 +40,6 @@ class GoodBroyden(QuasiNewton):  # 3.17
         denominator = u.T @ gamma_k
         #H_k = H_km1 + outer(delta_k - H_km1@gamma_k, H_km1@gamma_k) / inner((H_km1@delta_k), gamma_k)
         H_k = H_km1 + nominator/denominator
-        print(gamma_k)
 
         self.inverted_hessian = H_k
 
