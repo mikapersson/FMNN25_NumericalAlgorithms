@@ -75,19 +75,21 @@ def task7():
     print(res)
 
 
-def test_newton_methods(method="newton"):
+def test_newton_methods():
+    # Check that the chosen method is valid
     valid_methods = {"newton" : Newton, "goodBroyden" : GoodBroyden, "badBroyden" : BadBroyden
                         , "symmetricBroyden" : SymmetricBroyden, "DFP" : DFP, "BFGS" : BFGS}
 
-    if method not in valid_methods:
-        print("Method \'{}\' does not exist, choose one of the following:\n\t\'newton\', \'goodBroyden\', \'badBroyden\', \'symmetricBroyden\', \'DFP\', \'BFGS\'".format(method))
-        print("Exiting program.")
-        return
+    method = input("Testing Newton methods, choose one of the following:\n\t\'newton\', \'goodBroyden\', \'badBroyden\', \'symmetricBroyden\', \'DFP\', \'BFGS\'\nchoice: ")
+
+    while method not in valid_methods:
+        print("\nMethod \'{}\' does not exist, choose one of the following:\n\t\'newton\', \'goodBroyden\', \'badBroyden\', \'symmetricBroyden\', \'DFP\', \'BFGS\'".format(method))
+        method = input("Choice: ")
 
     problem = OptimizationProblem(rosenbrock)
     solution = valid_methods[method](problem)
 
-    print("Runnting {} method".format(method))
+    print("\nRunning {} method".format(method))
     min_point, min_value = solution.solve()
     optipoints = solution.values
     print("\nOptimal point:\n", min_point)
@@ -107,7 +109,7 @@ def test_chebyquad():
 
 
 def main():
-    test_newton_methods("goodBroyd")
+    test_newton_methods()
 
 
 main()
