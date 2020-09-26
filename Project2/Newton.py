@@ -156,4 +156,5 @@ class Newton:
             value = newvalue
             solved = self.termination_criterion(value)
             self.values = hstack([self.values, value])
+
         return [value, self.f(value)]

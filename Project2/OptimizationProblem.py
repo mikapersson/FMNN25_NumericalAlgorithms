@@ -6,11 +6,17 @@ from numpy import sin, cos
 
 # We define some functions that we later use for testing
 def sin_function(x):
+    if len(x) != 2:
+        raise ValueError("Sinus function takes arguments from R^2, not R^{}".format(len(x)))
+
     value = 3*sin(x[0]) + sin(x[1])
     return value
 
 
 def paraboloid_function(x):
+    if len(x) != 2:
+        raise ValueError("Paraboloid function takes arguments from R^2, not R^{}".format(len(x)))
+
     return x[0]**2 + x[1]**2
 
 
@@ -22,7 +28,6 @@ def gradient(x):
 def rosenbrock(x):  # optimal solution is (1,1)
     if len(x) != 2:
         raise ValueError("Rosenbrock takes arguments from R^2, not R^{}".format(len(x)))
-        return
 
     x_1 = x[0]
     x_2 = x[1]

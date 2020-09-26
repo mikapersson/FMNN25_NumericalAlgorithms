@@ -27,8 +27,8 @@ def contour_rosenbrock(levels=100, optipoints=array([])):
         raise ValueError("\'optipoints\' must have exactly 2 rows")
 
     size = 1000
-    x = linspace(-0.5, 2, size)
-    y = linspace(-1.5, 4, size)
+    x = linspace(-0.5, 5, size)
+    y = linspace(-1.5, 16, size)
     X, Y = meshgrid(x, y)
     input = array([X, Y])
     Z = rosenbrock(input)
@@ -66,7 +66,7 @@ def newton_methods_test(problem=None):
 
     # Let the user choose function if the problem wasn't already specified
     if not problem:
-        function_name = input("Choose function to optimize:\n\t\'sinus\', \'paraboloid\' or \'rosebrock\' (dangerous)"
+        function_name = input("Choose function to optimize:\n\t\'sinus\', \'paraboloid\' or \'rosenbrock\' (dangerous)"
                          "\nFunction: ")
         valid_functions = {"sinus": sin_function, "paraboloid": paraboloid_function, "rosenbrock": rosenbrock}
         while function_name not in valid_functions:
@@ -75,6 +75,9 @@ def newton_methods_test(problem=None):
             method = input("Function: ")
 
         function = valid_functions[function_name]
+
+        print("Using default problem (default gradient and points in R^2)")
+        problem = OptimizationProblem(function)
 
     # Let the user choose method
     method = input("\nTesting Newton methods, choose one of the following:\n\t\'newton\', \'goodBroyden\', "
@@ -88,10 +91,6 @@ def newton_methods_test(problem=None):
               "\'badBroyden\', \'symmetricBroyden\', \'DFP\', \'BFGS\'".format(method))
         method = input("Method: ")
 
-    if not problem:  # if we didn't specify a problem we take the 'simple_function'
-        print("Using default problem: sinus function")
-        problem = OptimizationProblem(function)
-
     # Choose line search method
     lsm = input("\nChoose line search method:\t\'exact\' or \'inexact\'\nLSM: ")
 
@@ -102,31 +101,61 @@ def newton_methods_test(problem=None):
         lsm = input("\nLSM \'{}\' does not exist, choose between \'exact\' and \'inexact\'\nLSM: ".format(lsm))
         solver = valid_methods[method](problem, lsm)
 
+    # Solve problem
     print("\nOptimizing {} with {} method with {} line search".format(function_name, method, lsm))
     min_point, min_value = solver.solve()
-    # optipoints = solver.values
     print("\nOptimal point:\n", min_point)
     print("\nMinimum value:\n", min_value)
-    # contour_rosenbrock(optipoints=optipoints)  # uncomment to plot rosenbrock_contour and optimization points
+
+    if function_name == "rosenbrock":
+        optipoints = solver.values
+        contour_rosenbrock(optipoints=optipoints)
 
 
-def chebyquad():
+def chebyquad_test():
+    """
+        Testing optimization of the Chebyquad-problem of a chosen degree n and comparing the results with those from numpy.optimize.fmin_bfgs().
+        """
 
-    scalar = 1
-    ns = [4, 8, 11]
-    for n in ns:
-        problem = OptimizationProblem(chebyquad, gradchebyquad, n)
-        solution = Newton(problem)
-        min_point, min_value = solution.solve()
-        min2 = opt.fmin(chebyquad, ones((n, 1)) * scalar)
-        print(min_value)
-        print(min2)
-        print()
+    degree = input("Testing mimimization of the Chebyquad function of degree n. Choose degree n: ")
+    degree = int(degree)
+
+    method = input(
+        "Testing Newton methods, choose one of the following:\n\t\'newton\', \'goodBroyden\', \'badBroyden\', \'symmetricBroyden\', \'DFP\', \'BFGS\'\nMethod: ")
+
+    # Check that the chosen method is valid
+    valid_methods = {"newton": Newton, "goodBroyden": GoodBroyden, "badBroyden": BadBroyden
+        , "symmetricBroyden": SymmetricBroyden, "DFP": DFP, "BFGS": BFGS}
+    while method not in valid_methods:
+        print(
+            "\nMethod \'{}\' does not exist, choose one of the following:\n\t\'newton\', \'goodBroyden\', \'badBroyden\', \'symmetricBroyden\', \'DFP\', \'BFGS\'".format(
+                method))
+        method = input("Method: ")
+
+    problem = OptimizationProblem(chebyquad, dimension=degree)
+    solver = valid_methods[method](problem, lsm="inexact")
+    a = solver.solve()
+
+    print()
+    print("Optimizing the Chebyquad function of degree n = " + str(degree) + " with a " + str(method) + "-method: ")
+    print("Function value: " + str(a[1]))
+    print("The minimum was found in: " + str(transpose(a[0])))
+    print()
+    print("Optimizing the same function with numpy.optimize.fmin: ")
+    min2 = opt.fmin_bfgs(chebyquad, ones((degree, 1)) * 1, disp=False, full_output=True)
+    print("Function value: " + str(min2[1]))
+    print("The minimum was found in: " + str(min2[0]))
+    print()
+
+    if isclose(min2[0], transpose(a[0])).all() and isclose(min2[1], a[1]):
+        print("The two methods yield the same result.")
+    else:
+        print("The two methods do NOT yield the same result.")
 
 
 def main():
-    newton_methods_test()
-    # chebyquad()
+    # newton_methods_test()
+    chebyquad_test()
 
 
 main()
