@@ -90,5 +90,9 @@ class BFGS(QuasiNewton):  # 3.22 (errors can occur)
         g = transpose(delta_k) @ gamma_k
         H_k = H_km1 + (1 + a / b) * (c / d) - (f / g)
 
+        if self.hessians == "on":
+            self.all_hessians = append(self.all_hessians, H_k)
+            self.stepcoordinates = append(self.stepcoordinates, x_next)
+
         self.inverted_hessian = H_k
 

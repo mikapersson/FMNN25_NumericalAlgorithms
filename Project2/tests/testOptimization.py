@@ -16,7 +16,6 @@ class TestOptimization(unittest.TestCase):
     The Rosenbrock function is used to test all solvers
     """
 
-
     difficult_problem = OptimizationProblem(rosenbrock)
     difficult_solution = array([[1],
                       [1]])

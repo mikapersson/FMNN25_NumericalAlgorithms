@@ -33,7 +33,7 @@ def contour_rosenbrock(levels=100, optipoints=array([])):
     input = array([X, Y])
     Z = rosenbrock(input)
 
-    if len(optipoints) != 0:  # plot optimization points (either optipoints is empty or has 2 columns)
+    if len(optipoints) != 0:  # plot optimization points (either optipoints is empty or has 2 rows)
         plt.scatter(optipoints[0, :], optipoints[1, :])
 
     plt.contour(X, Y, Z, levels)
@@ -60,8 +60,6 @@ def task7():
 def newton_methods_test(problem=None):
     """
     Test Quasi Newton methods on the (optionally specified) 'problem'
-    :param problem:
-    :return:
     """
 
     # Let the user choose function if the problem wasn't already specified
@@ -72,9 +70,9 @@ def newton_methods_test(problem=None):
         while function_name not in valid_functions:
             print("\nFunction \'{}\' does not exist, choose one of the following:\n\'sinus\', \'paraboloid\' or "
                   "\'rosenbrock\'".format(function_name))
-            method = input("Function: ")
+            function_name = input("Function: ")
 
-        function = valid_functions[function_name]
+        function = valid_functions[function_name]  # converts from string to actual function
 
         print("Using default problem (default gradient and points in R^2)")
         problem = OptimizationProblem(function)
@@ -114,8 +112,8 @@ def newton_methods_test(problem=None):
 
 def chebyquad_test():
     """
-        Testing optimization of the Chebyquad-problem of a chosen degree n and comparing the results with those from numpy.optimize.fmin_bfgs().
-        """
+    Testing optimization of the Chebyquad-problem of a chosen degree n and comparing the results with those from numpy.optimize.fmin_bfgs().
+    """
 
     degree = input("Testing mimimization of the Chebyquad function of degree n. Choose degree n: ")
     degree = int(degree)
@@ -153,9 +151,59 @@ def chebyquad_test():
         print("The two methods do NOT yield the same result.")
 
 
+def HessianQualityControl():
+    """
+    Testing quality of the evaluation of the inverse Hessian by comparing mean differences between calculated and exact
+    matrices.
+    """
+
+    problem = OptimizationProblem()
+    solver = BFGS(problem, lsm="inexact", hessians="on")
+    solution = solver.solve()
+
+    def true_hessian_inverse(x):
+        """The exact inverse hessian"""
+        hessian = [1/(-3*sin(x[0])), 0, 0, 1/-sin(x[1])]
+        hessian = reshape(hessian,[-1])
+        return hessian
+
+    nmbr = size(solution[1])  # number of evaluations k
+    inverse_hessians = reshape(solution[0],[-1])  # Elements of all calculated hessians
+    allhess = empty(0)
+    differences = empty(0)
+    k = 1
+
+    for i in range(0,nmbr,2):
+        coordinates = solution[1][i:i+2]  # Coordinates of calculated hessians
+        print(coordinates)
+        truehess = true_hessian_inverse(coordinates)  # Calculating exact hessian
+        allhess = append(allhess,truehess)
+
+    while inverse_hessians.size > 1:
+        # Comparing values of hessian elements
+        testvalues = inverse_hessians[0:4]
+        truevalues = allhess[0:4]
+
+        difference = abs(testvalues-truevalues)
+        # print("k = " + str(k))
+        k +=1
+        differences = append(differences, mean(difference))
+
+        inverse_hessians = inverse_hessians[4:-1]
+        allhess = allhess[4:-1]
+
+    x = linspace(1,k-1,k-1)
+    plt.plot(x,differences)
+    plt.xlabel("k")
+    plt.ylabel("Mean difference between calculated and exact inverse Hessian")
+    plt.show()
+
+
+
 def main():
     # newton_methods_test()
-    chebyquad_test()
+    # chebyquad_test()
+    HessianQualityControl()
 
 
 main()

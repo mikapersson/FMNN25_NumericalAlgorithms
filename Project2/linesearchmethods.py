@@ -25,18 +25,15 @@ def exact_linesearch(f, x, s):
 
 def inexact_linesearch(f, x, s, rho, sigma, tau, chi):
     """
-    Determines a_k by inexact line search method satisfying the Wolfe-Powell conditions
-    :param f:
-    :param x:
-    :param s:
-    :param rho:
-    :param sigma:
-    :param tau:
-    :param chi:
-    :return:
+    Determines a_k by inexact line search method satisfying the Wolfe-Powell conditions, last four parameters
+    are given in Lecture03, slide 52
+    :param f: object function
+    :param x: where we are at
+    :param s: step direction
+    :return: step length (alpha)
     """
     alpha_L = 0.
-    alpha_0 = 1.
+    alpha_0 = 8.
     alpha_U = 10**99
 
     def f_alpha(alpha):  # defined in section 3.6 Lecture03

@@ -9,16 +9,19 @@ We refer to the Lecture03 slides when we write "section (X.Y)"
 
 class Newton:
 
-    def __init__(self, problem, lsm="inexact"):
+    def __init__(self, problem, lsm="inexact", hessians="off"):
         self.epsilon = 0.000001                       # step size for approximating derivatives
         self.f = problem.function                     # object function
         self.n = problem.dimension                    # the dimension of the domain, R^n
         self.alpha = 1                                # step size in the Newton Direction
         self.values = array([])                       # the values we obtain when iterating to the optimum solution
-        self.TOL = 1.e-10                             # values under TOL are set to 0
+        self.TOL = 1.e-5                              # values under TOL are set to 0
         self.start = ones((self.n, 1)) * 4            # where we start our iteration/algorithm
         self.hessian = self.compute_hessian(self.start)   # current Hessian matrix (G)
         self.inverted_hessian = linalg.inv(self.hessian)  # current inverted Hessian matrix (H)
+        self.hessians = hessians
+        self.all_hessians = [self.inverted_hessian]
+        self.stepcoordinates = [self.start]
 
         # Decides which gradient-function to go after
         if problem.gradient:  # if user supplied problem instance with a gradient
@@ -157,4 +160,8 @@ class Newton:
             solved = self.termination_criterion(value)
             self.values = hstack([self.values, value])
 
+        if self.hessians == "on":
+            return self.all_hessians, self.stepcoordinates
+
         return [value, self.f(value)]
+
