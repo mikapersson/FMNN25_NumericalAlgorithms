@@ -1,7 +1,8 @@
 from Newton import *
 
 
-class QuasiNewton(Newton):
+class QuasiNewton(Newton):  # This is not needed, let QN methods directly inherit from Newton since
+                            # QuasiNewton class doesn't have any new features compared to Newton
     """
     Subclass to Newton, collecting the common methods for the deriving QuasiNewton methods (below this class)
     """
@@ -13,6 +14,8 @@ class QuasiNewton(Newton):
         :param x_k: (array) from
         :return: None
         """
+
+         # use raise ERROR so that we can't create an instance of QuiasiNewton class
 
     def newstep(self, x):
         s = self.step_direction(x)

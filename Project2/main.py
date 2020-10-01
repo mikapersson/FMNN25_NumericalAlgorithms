@@ -201,9 +201,9 @@ def HessianQualityControl():
 
 
 def main():
-    # newton_methods_test()
+    newton_methods_test()
     # chebyquad_test()
-    HessianQualityControl()
+    # HessianQualityControl()
 
 
 main()

@@ -10,7 +10,7 @@ We refer to the Lecture03 slides when we write "section (X.Y)"
 class Newton:
 
     def __init__(self, problem, lsm="inexact", hessians="off"):
-        self.epsilon = 0.000001                       # step size for approximating derivatives
+        self.epsilon = 0.00001                        # step size for approximating derivatives
         self.f = problem.function                     # object function
         self.n = problem.dimension                    # the dimension of the domain, R^n
         self.alpha = 1                                # step size in the Newton Direction
@@ -59,7 +59,7 @@ class Newton:
 
     def compute_hessian(self, x):
         """
-        Computes the inverse hessian of f at the given point x by forward-difference (p.201 Nocedal, Wright)
+        Computes the hessian of f at the given point x by forward-difference (p.201 Nocedal, Wright)
         :return: nxn matrix
         """
         G = empty((self.n, self.n))
