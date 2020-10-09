@@ -20,7 +20,7 @@ else:
     comm.send(received + rank, dest=(rank+1) % size)
 
 
-""" FACIT
+""" COMPARE 
 s = comm.allreduce(rank, op=MPI.SUM)
 if rank == 0:
     print(s)
