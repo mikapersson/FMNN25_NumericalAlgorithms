@@ -7,7 +7,7 @@ from scipy.sparse.linalg import cg, spsolve
 
 class Domain_Three:
 
-    def __init__(self):
+    def __init__(self, n):
         # Boundary conditions
         self.Gamma_H = 40
         self.Gamma_WF = 5
@@ -15,7 +15,7 @@ class Domain_Three:
         self.Initial_T = 15
 
         # Number of (inner) grid points per unit length
-        self.n = 3
+        self.n = n
         self.h = 1 / self.n
 
         self.omega = 0.8  # coefficient used in relaxation (step 3 in iteration)

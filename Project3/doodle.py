@@ -48,3 +48,6 @@ solution = spsolve(A, B)
 Gamma1 = solution[(nx - 1) * ny:]
 print(solution)
 print(Gamma1)
+
+a = zeros((2, 9))
+print(a)
