@@ -21,7 +21,7 @@ class Domain_Two:
         self.h = 1 / self.n
 
         # Initialize the domain/room 'omega 2'
-        self.T_domain_two = ones((2 * self.n + 2, self.n + 2)) * self.Initial_T
+        self.T_domain_two = ones((2 * (self.n + 2) - 1, self.n + 2)) * self.Initial_T
         self.T_domain_two[0, :] = self.Gamma_H  # heater
         self.T_domain_two[-1, :] = self.Gamma_WF  # window
 
@@ -95,7 +95,7 @@ class Domain_Two:
                 T[j, i] = solution[j + (i - 1) * ny - 1]
 
         self.T_domain_two = T
-        self.T_domain_two[int(self.n * 2 / 2 + 1):-1, 0] = Gamma_1
+        self.T_domain_two[-(self.n + 1):-1, 0] = Gamma_1
         self.T_domain_two[1:int(self.n * 2 / 2 + 1), -1] = Gamma_3
 
         self.T_domain_two = self.omega*self.T_domain_two + (1-self.omega)*Told  # relaxation

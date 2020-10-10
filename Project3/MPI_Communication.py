@@ -1,4 +1,4 @@
-from mpi4py import MPI
+# from mpi4py import MPI
 from heat_transfer import *
 from Domain_One import*
 from Domain_Two import*
@@ -7,21 +7,19 @@ from Domain_Three import*
 
 def solve_heat_transfer(comm=None):
 
-    if comm is None:
-        comm = MPI.COMM_WORLD
+    #if comm is None:
+    #    comm = MPI.COMM_WORLD
 
     rank = comm.rank  # rank of current process
-    print(rank)
     n = 3  # number of inner grid points per unit length
     maxiteration = 3
 
     # Initializing domains for storing temperatures.
-    print(rank)
     if rank == 0:
         Domain_1 = Domain_One(n)
-    if rank == 1:
+    elif rank == 1:
         Domain_2 = Domain_Two(n)
-    if rank == 2:
+    elif rank == 2:
         Domain_3 = Domain_Three(n)
     else:
         raise ValueError("Wrong number of processes, only 3 is valid")
@@ -29,7 +27,7 @@ def solve_heat_transfer(comm=None):
     k = 0
 
     while k < maxiteration:  # Start iteration
-        print("Process {}, iteration {}".format(rank+1, k+1))
+        # print("Process {}, iteration {}".format(rank+1, k+1))
         if rank == 0:
             if k == 0:
                 border = Domain_1.compute_distribution(None)
@@ -78,8 +76,8 @@ def solve_heat_transfer(comm=None):
                 if k == maxiteration:
                     return Domain_3.T_domain_three
 
-def main():
-    solve_heat_transfer()
+#def main():
+#    solve_heat_transfer()
 
 
-main()
+#main()
