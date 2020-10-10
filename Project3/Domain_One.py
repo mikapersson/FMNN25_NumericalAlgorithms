@@ -35,8 +35,8 @@ class Domain_One:
         """
         A = 1 / (self.h ** 2) * diags([-4, 1, 1, 1, 1], [0, 1, -1, ny, -ny], shape=(nx * ny, nx * ny)).toarray()
         for i in range(1, nx):  # shorten or use 'i'?
-            A[nx, nx - 1] = 0
-            A[nx - 1, nx] = 0
+            A[i*(ny - 1), i*ny] = 0
+            A[i*ny, i*(ny - 1)] = 0
         A = csr_matrix(A)
         return A
 
