@@ -11,17 +11,18 @@ class Domain_Three:
         # Boundary conditions
         self.Gamma_H = 40
         self.Gamma_WF = 5
-        self.Gamma_N = 10
+        self.Gamma_N = 15
         self.Initial_T = 15
 
         # Number of (inner) grid points per unit length
-        self.n = 4
+        self.n = 3
         self.h = 1 / self.n
 
+        self.omega = 0.8  # coefficient used in relaxation (step 3 in iteration)
+
+        # Initialize the domain/room 'omega 3'
         self.T_domain_three = ones((self.n + 2, self.n + 2)) * self.Initial_T
-        self.T_domain_three[-1, :] = self.Gamma_N
-        self.T_domain_three[0, :] = self.Gamma_N
-        self.T_domain_three[0:self.n + 2, -1] = self.Gamma_H
+        self.T_domain_three[:, -1] = self.Gamma_H  # heater
 
     def A_matrix(self, nx, ny):
         """
@@ -84,8 +85,13 @@ class Domain_Three:
             #print(self.Gamma3)
 
             T = self.T_domain_three
+            Told = self.T_domain_three
+
             for j in range(1, ny + 1):
                 for i in range(1, nx + 1):
                     T[j, i - 1] = solution[j + (i - 1) * ny - 1]
             self.T_domain_three = T
+
+            self.T_domain_three = self.omega * self.T_domain_three + (1 - self.omega) * Told
+
             return self.Gamma3

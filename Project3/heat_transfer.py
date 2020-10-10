@@ -187,13 +187,6 @@ class heat_transfer:
             self.T_domain_three = T
             return self.Gamma3
 
-
-
-
-
-
-
-
 """
          x = linspace(0, X_length, nx + 2)
             y = linspace(0, Y_length, ny + 2)

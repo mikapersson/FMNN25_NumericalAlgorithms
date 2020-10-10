@@ -11,17 +11,20 @@ class Domain_One:
         # Boundary conditions
         self.Gamma_H = 40
         self.Gamma_WF = 5
-        self.Gamma_N = 10
+        self.Gamma_N = 15
         self.Initial_T = 15
 
         # Number of (inner) grid points per unit length
-        self.n = 4
+        self.n = 3
         self.h = 1 / self.n
 
+        self.omega = 0.8  # coefficient used in relaxation (step 3 in iteration)
+
+        # Initialize the domain/room 'omega 1'
         self.T_domain_one = ones((self.n + 2, self.n + 2)) * self.Initial_T
         self.T_domain_one[-1, :] = self.Gamma_N
         self.T_domain_one[0, :] = self.Gamma_N
-        self.T_domain_one[0:self.n + 2, 0] = self.Gamma_H
+        self.T_domain_one[:, 0] = self.Gamma_H  # heater
 
     def A_matrix(self, nx, ny):
         """
@@ -31,7 +34,7 @@ class Domain_One:
         :return: Matrix A
         """
         A = 1 / (self.h ** 2) * diags([-4, 1, 1, 1, 1], [0, 1, -1, ny, -ny], shape=(nx * ny, nx * ny)).toarray()
-        for i in range(1, nx):
+        for i in range(1, nx):  # shorten or use 'i'?
             A[nx, nx - 1] = 0
             A[nx - 1, nx] = 0
         A = csr_matrix(A)
@@ -70,13 +73,16 @@ class Domain_One:
         B = self.B_vector(nx, ny, border)
         solution = spsolve(A, B)
 
-        self.Gamma1 = solution[(nx - 1) * ny:]
-        #self.T_domain_two[1:int(self.n * 2 / 2 + 1), 0] = self.Gamma1
+        Gamma1 = solution[(nx - 1) * ny:]
 
         T = self.T_domain_one
+        Told = self.T_domain_one
+
         for j in range(1, ny + 1):
             for i in range(1, nx + 1):
                 T[j, i] = solution[j + (i - 1) * ny - 1]
         self.T_domain_one = T
 
-        return self.Gamma1
+        self.T_domain_one = self.omega*self.T_domain_one + (1-self.omega)*Told  # relaxation
+
+        return Gamma1
