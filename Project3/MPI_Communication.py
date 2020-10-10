@@ -1,4 +1,4 @@
-# from mpi4py import MPI
+from mpi4py import MPI
 from heat_transfer import *
 from Domain_One import*
 from Domain_Two import*
@@ -6,9 +6,14 @@ from Domain_Three import*
 
 
 def solve_heat_transfer(comm=None):
+    """
+    Solve the heat distribution problem over the apartment with three domains/rooms with one thread per room
+    :param comm: Process
+    :return:
+    """
 
-    #if comm is None:
-    #    comm = MPI.COMM_WORLD
+    if comm is None:
+        comm = MPI.COMM_WORLD
 
     rank = comm.rank  # rank of current process
     n = 3  # number of inner grid points per unit length

@@ -50,7 +50,7 @@ def plot_temperature():
 
         # Heatmap
         ax = sb.heatmap(temperature, cmap='YlOrBr')
-        plt.title("Heat distribution of apartment")
+        plt.title("Heat distribution over apartment")
         ax.set_axis_off()
 
         plt.show()

@@ -67,7 +67,6 @@ class Domain_Three:
         # Right Boundary. Last Ny values
         B[(nx - 1) * ny: nx * ny] = -self.Gamma_H
 
-
         B = B / self.h ** 2
         return B
 
@@ -81,8 +80,6 @@ class Domain_Three:
             solution = spsolve(A, B)
 
             self.Gamma3 = solution[0:ny]
-            #self.T_domain_two[int(self.n * 2 / 2 + 1):-1, -1] = self.Gamma3
-            #print(self.Gamma3)
 
             T = self.T_domain_three
             Told = self.T_domain_three
