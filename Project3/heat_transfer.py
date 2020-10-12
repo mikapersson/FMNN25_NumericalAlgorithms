@@ -13,11 +13,11 @@ class heat_transfer:
         #Boundary conditions
         self.Gamma_H = 40
         self.Gamma_WF = 5
-        self.Gamma_N = 10
+        self.Gamma_N = 15
         self.Initial_T = 15
 
         #Number of (inner) grid points per unit length
-        self.n = 4
+        self.n = 3
         self.h = 1/self.n
 
         # Grid temperatures for the domains
@@ -61,8 +61,8 @@ class heat_transfer:
         """
         A = 1 / (self.h ** 2) * diags([-4, 1, 1, 1, 1], [0, 1, -1, ny, -ny], shape=(nx * ny, nx * ny)).toarray()
         for i in range(1, nx):
-            A[nx, nx - 1] = 0
-            A[nx - 1, nx] = 0
+            A[i*ny, i*(ny - 1)] = 0
+            A[i*(ny - 1), i*ny] = 0
         A = csr_matrix(A)
         return A
 
@@ -80,7 +80,7 @@ class heat_transfer:
 
         # Top boundary values.
         if domain == 2:
-            for i in range(1, nx):
+            for i in range(1, nx+1):
                 B[i * ny - 1] += -self.Gamma_H
         if domain == 1 or domain == 3:
             for i in range(1, nx):
@@ -90,9 +90,11 @@ class heat_transfer:
         if domain == 2:
             for j in range(0, nx):
                 B[j * ny] += -self.Gamma_WF
+
         if domain == 1 or domain == 3:
             for j in range(0, nx):
                 B[j * ny] += -self.Gamma_N
+
 
         # Left boundary. First Ny values
         if domain == 2:
@@ -107,10 +109,16 @@ class heat_transfer:
         if domain == 2:
             B[(nx - 1) * ny: int((nx - 1) * ny + ((nx * ny - 1) - (nx - 1) * ny) / 2) + 1] += -self.Gamma_N
             B[(nx - 1) * ny + int(((nx * ny - 1) - (nx - 1) * ny) / 2) + 1: nx * ny] += -self.T_domain_three[1:self.n+1,0]
+            B[-1] += -self.Gamma_WF
+
+        B[ny*(nx-1)] = -self.Gamma_WF
+
         if domain == 3:
             B[(nx - 1) * ny: nx*ny] = -self.Gamma_H
+            B[-1] += -self.Gamma_N
         if domain == 1:
-            B[0:ny] += -self.omega_one_border
+            B[(nx - 1) * ny: nx*ny] += -self.omega_one_border
+            B[-1] += -self.Gamma_N
 
         B = B / self.h ** 2
         return B
@@ -138,6 +146,7 @@ class heat_transfer:
 
             T = ones((ny + 2, nx + 2))
             T = self.T_domain_two
+            print(solution)
 
             for j in range(1, ny + 1):
                 for i in range(1, nx + 1):
@@ -186,6 +195,13 @@ class heat_transfer:
                     T[j, i-1] = solution[j + (i - 1) * ny - 1]
             self.T_domain_three = T
             return self.Gamma3
+
+
+
+
+
+
+
 
 """
          x = linspace(0, X_length, nx + 2)

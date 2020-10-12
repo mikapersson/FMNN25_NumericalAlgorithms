@@ -4,10 +4,9 @@ from scipy.sparse import diags
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import cg, spsolve
 
-
 class Domain_One:
 
-    def __init__(self, n):
+    def __init__(self):
         # Boundary conditions
         self.Gamma_H = 40
         self.Gamma_WF = 5
@@ -15,16 +14,15 @@ class Domain_One:
         self.Initial_T = 15
 
         # Number of (inner) grid points per unit length
-        self.n = n
+        self.n = 3
         self.h = 1 / self.n
 
-        self.omega = 0.8  # coefficient used in relaxation (step 3 in iteration)
+        self.omega = 0.8
 
-        # Initialize the domain/room 'omega 1'
         self.T_domain_one = ones((self.n + 2, self.n + 2)) * self.Initial_T
         self.T_domain_one[-1, :] = self.Gamma_N
         self.T_domain_one[0, :] = self.Gamma_N
-        self.T_domain_one[:, 0] = self.Gamma_H  # heater
+        self.T_domain_one[0:self.n + 2, 0] = self.Gamma_H
 
     def A_matrix(self, nx, ny):
         """
@@ -34,9 +32,9 @@ class Domain_One:
         :return: Matrix A
         """
         A = 1 / (self.h ** 2) * diags([-4, 1, 1, 1, 1], [0, 1, -1, ny, -ny], shape=(nx * ny, nx * ny)).toarray()
-        for i in range(1, nx):  # shorten or use 'i'?
-            A[i*(ny - 1), i*ny] = 0
-            A[i*ny, i*(ny - 1)] = 0
+        for i in range(1, nx):
+            A[i * ny, i * (ny - 1)] = 0
+            A[i * (ny - 1), i * ny] = 0
         A = csr_matrix(A)
         return A
 
@@ -56,7 +54,7 @@ class Domain_One:
         B[0:ny] += -self.Gamma_H
 
         # Right Boundary. Last Ny values
-        B[0:ny] += -border
+        B[-ny:] += -border
 
         B = B / self.h ** 2
         return B
@@ -73,7 +71,8 @@ class Domain_One:
         B = self.B_vector(nx, ny, border)
         solution = spsolve(A, B)
 
-        Gamma1 = solution[(nx - 1) * ny:]
+        self.Gamma1 = solution[(nx - 1) * ny:]
+        #self.T_domain_two[1:int(self.n * 2 / 2 + 1), 0] = self.Gamma1
 
         T = self.T_domain_one
         Told = self.T_domain_one
@@ -81,8 +80,10 @@ class Domain_One:
         for j in range(1, ny + 1):
             for i in range(1, nx + 1):
                 T[j, i] = solution[j + (i - 1) * ny - 1]
+                #T[2,1] is solution[1]
         self.T_domain_one = T
 
-        self.T_domain_one = self.omega*self.T_domain_one + (1-self.omega)*Told  # relaxation
+        self.T_domain_one = self.omega*self.T_domain_one + (1-self.omega)*Told
 
-        return Gamma1
+
+        return self.Gamma1

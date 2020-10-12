@@ -7,7 +7,7 @@ from scipy.sparse.linalg import cg, spsolve
 
 class Domain_Three:
 
-    def __init__(self, n):
+    def __init__(self):
         # Boundary conditions
         self.Gamma_H = 40
         self.Gamma_WF = 5
@@ -15,14 +15,15 @@ class Domain_Three:
         self.Initial_T = 15
 
         # Number of (inner) grid points per unit length
-        self.n = n
+        self.n = 3
         self.h = 1 / self.n
 
-        self.omega = 0.8  # coefficient used in relaxation (step 3 in iteration)
+        self.omega = 0.8
 
-        # Initialize the domain/room 'omega 3'
         self.T_domain_three = ones((self.n + 2, self.n + 2)) * self.Initial_T
-        self.T_domain_three[:, -1] = self.Gamma_H  # heater
+        self.T_domain_three[-1, :] = self.Gamma_N
+        self.T_domain_three[0, :] = self.Gamma_N
+        self.T_domain_three[0:self.n + 2, -1] = self.Gamma_H
 
     def A_matrix(self, nx, ny):
         """
@@ -33,8 +34,8 @@ class Domain_Three:
         """
         A = 1 / (self.h ** 2) * diags([-4, 1, 1, 1, 1], [0, 1, -1, ny, -ny], shape=(nx * ny, nx * ny)).toarray()
         for i in range(1, nx):
-            A[i * (ny - 1), i * ny] = 0
             A[i * ny, i * (ny - 1)] = 0
+            A[i * (ny - 1), i * ny] = 0
         A = csr_matrix(A)
         return A
 
@@ -67,6 +68,7 @@ class Domain_Three:
         # Right Boundary. Last Ny values
         B[(nx - 1) * ny: nx * ny] = -self.Gamma_H
 
+
         B = B / self.h ** 2
         return B
 
@@ -80,6 +82,8 @@ class Domain_Three:
             solution = spsolve(A, B)
 
             self.Gamma3 = solution[0:ny]
+            #self.T_domain_two[int(self.n * 2 / 2 + 1):-1, -1] = self.Gamma3
+            #print(self.Gamma3)
 
             T = self.T_domain_three
             Told = self.T_domain_three

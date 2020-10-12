@@ -31,15 +31,22 @@ def plot_temperature():
         omega_3 = comm.recv(source=2)
 
         # Construct temperature distribution matrix and plot
-        x_len = 9
-        y_len = 13
+        x_len = 6
+        y_len = 11
         x = arange(0, x_len)
         y = arange(0, y_len)
         X, Y = meshgrid(x, y)
         temperature = zeros((x_len, y_len))
-        temperature[4:, 0:4] = omega_1[:, :-1]
-        temperature[:, 4:9] = omega_2
-        temperature[:5, 9:] = omega_3[:, 1:]
+        temperature[:3, 0:3] = omega_1[1:4, 1:-1]
+        temperature[:, 3:8] = omega_2[1:-1, :]
+        temperature[3:, 8:] = omega_3[1:4, 1:4]
+        temperature = flip(temperature,0)
+
+        print(omega_2)
+        print()
+        print(omega_1)
+        print()
+        print(omega_3)
 
         # 3D plot
         # fig = plt.figure()

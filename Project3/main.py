@@ -7,6 +7,7 @@ import numpy as np
 from scipy import*
 from scipy.sparse import diags
 from heat_transfer import *
+import matplotlib.pyplot as plt
 
 comm = MPI.COMM_WORLD
 print("Hello World: process ", comm.Get_rank(), " out of ", comm.Get_size(), " is reporting for duty!")
@@ -38,3 +39,27 @@ print(h.T_domain_two)
 print()
 print(h.T_domain_three)
 print()
+nx = h.n
+ny = 2*nx
+x = linspace(0, 1, nx + 2)
+y = linspace(0, 2, ny + 2)
+X, Y = meshgrid(x, y)
+
+T = h.T_domain_two
+
+h = plt.contourf(X, Y, T)
+plt.colorbar(aspect=4)
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
